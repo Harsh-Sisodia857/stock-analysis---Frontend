@@ -1,0 +1,35 @@
+.button-29 {
+    background-color: #111827;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    flex: 0 0 auto;
+    font-family: "Inter var", ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 1rem; 
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+    width: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+  }
+  
+  .button-29:hover {
+    background-color: #374151;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .button-29:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); 
+    outline: none; 
+  }
+  
+  .button-29:active {
+    background-color: #1f2937; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
