@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
 import { ToastContainer } from 'react-toastify';
 import Stocks from "./pages/Stocks";
+import Company from "./pages/Company";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/mutual_funds" element={<MutualFund />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/company" element={<Company />} />
         <Route path="/company/stock" element={<Stocks />} />
       </Routes>
     </>
