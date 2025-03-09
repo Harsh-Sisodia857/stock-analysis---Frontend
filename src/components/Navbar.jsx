@@ -1,85 +1,93 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/Stock Analysis.svg";
 import { useSelector } from "react-redux";
+import { useState } from "react";
+import logo from "../assets/Stock Analysis.png";
+import { Menu, X } from "lucide-react"; // used for icon in mobile menu
 
 function Navbar() {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false); // State for mobile menu
   let role = user?.role || "";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
-  console.log("ROLE : ", role);
-  console.log("USER : ", user);
-  return (
-    <div className="flex justify-around items-center bg-blue-600">
-      <div className="text-white font-bold text-lg">
-        <img src={logo} alt="Stock Analysis" className="h-[72px] w-[112px]" />
-      </div>
-      <div>
-        <ul className="flex space-x-6">
-          {role === "user" ? (
-            <>
-              <li>
-                <a href="/" className="text-white hover:text-blue-300">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="/about" className="text-white hover:text-blue-300">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="/mutual_funds" className="text-white hover:text-blue-300">
-                  Mutual Funds
-                </a>
-              </li>
-            </>
-          ) : (
-            <>
-              <li>
-                <a href="/" className="text-white hover:text-blue-300">
-                  Stocks
-                </a>
-              </li>
-              <li>
-                <a href="/admin_mutual_funds" className="text-white hover:text-blue-300">
-                  Mutual Funds
-                </a>
-              </li>
-            </>
-          )}
 
-          {localStorage.getItem("token") ? (
-            <li>
-              <a
-                href="/login"
-                onClick={handleLogout}
-                className="text-white hover:text-blue-300"
-              >
-                Logout
-              </a>
-            </li>
-          ) : (
-            <>
-              <li>
-                <a href="/login" className="text-white hover:text-blue-300">
-                  Login
-                </a>
-              </li>
-              <li>
-                <a href="/signup" className="text-white hover:text-blue-300">
+  return (
+    <nav className="bg-blue-600 shadow-md">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
+          
+          <a href="/" className="flex items-center space-x-2">
+            <img src={logo} alt="Stock Analysis" className="h-12 w-auto" />
+            <p className="text-[#d0a933] text-2xl font-bold"> STOCK ANALYSIS</p>
+          </a>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-6">
+            {role === "user" ? (
+              <>
+                <a href="/" className="text-white hover:text-blue-300 transition">Home</a>
+                <a href="/about" className="text-white hover:text-blue-300 transition">About Us</a>
+                <a href="/mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+              </>
+            ) : (
+              <>
+                <a href="/" className="text-white hover:text-blue-300 transition">Stocks</a>
+                <a href="/admin_mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+              </>
+            )}
+
+            {localStorage.getItem("token") ? (
+              <button onClick={handleLogout} className="text-white hover:text-blue-300 transition">Logout</button>
+            ) : (
+              <>
+                <a href="/login" className="text-white hover:text-blue-300 transition">Login</a>
+                <a href="/signup" className="text-white hover:text-blue-300 transition">
                   Sign Up
                 </a>
-              </li>
-            </>
-          )}
-        </ul>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-white">
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isOpen && (
+          <div className="md:hidden flex flex-col space-y-4 py-4">
+            {role === "user" ? (
+              <>
+                <a href="/" className="text-white hover:text-blue-300 transition">Home</a>
+                <a href="/about" className="text-white hover:text-blue-300 transition">About Us</a>
+                <a href="/mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+              </>
+            ) : (
+              <>
+                <a href="/" className="text-white hover:text-blue-300 transition">Stocks</a>
+                <a href="/admin_mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+              </>
+            )}
+
+            {localStorage.getItem("token") ? (
+              <button onClick={handleLogout} className="text-white hover:text-blue-300 transition">Logout</button>
+            ) : (
+              <>
+                <a href="/login" className="text-white hover:text-blue-300 transition">Login</a>
+                <a href="/signup" className="bg-white text-blue-600 px-4 py-1 rounded-md hover:bg-gray-200 transition">
+                  Sign Up
+                </a>
+              </>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+    </nav>
   );
 }
 
