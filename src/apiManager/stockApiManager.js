@@ -1,4 +1,4 @@
-import { setStock } from "../store/slice/stockSlice";
+import { saveStocksThunk, setStock } from "../store/slice/stockSlice";
 
 export const getStocks = () => {
   return async (dispatch) => { // Accept dispatch as an argument
@@ -17,7 +17,7 @@ export const getStocks = () => {
           ? JSON.parse(json.stockData)
           : json.stockData;
       console.log("Stock data : ", stockData);
-      dispatch(setStock(stockData)); // Now dispatch is in scope
+      dispatch(saveStocksThunk(stockData))
     } catch (error) {
       console.error("Error fetching stocks:", error);
     }

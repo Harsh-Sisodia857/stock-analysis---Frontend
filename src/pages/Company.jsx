@@ -5,11 +5,12 @@ import { useSelector } from "react-redux";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
-  if (marketCap < 50000) return "Micro";
-  if (marketCap < 250000) return "Small";
-  if (marketCap < 1000000) return "Mid";
-  return "Large";
+  if (marketCap < 5000) return "Micro";      // Less than ₹5,000 Cr
+  if (marketCap < 20000) return "Small";     // ₹5,000 Cr - ₹20,000 Cr
+  if (marketCap < 50000) return "Mid";       // ₹20,000 Cr - ₹50,000 Cr
+  return "Large";                            // ₹50,000 Cr and above
 };
+
 
 function Company() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ function Company() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesMarketCap = marketCapFilter
-      ? getMarketCapCategory(company.marketCap) === marketCapFilter
+      ? getMarketCapCategory(company["Market Cap"]) === marketCapFilter
       : true;
 
     return matchesSector && matchesMarketCap;
@@ -58,7 +59,7 @@ function Company() {
           <select
             value={marketCapFilter}
             onChange={(e) => setMarketCapFilter(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-2 border border-gray-300 rounded-md px-2 mx-1"
           >
             <option value="">All Market Caps</option>
             <option value="Micro">Micro</option>
@@ -70,7 +71,7 @@ function Company() {
       </div>
 
       {/* Company Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mx-2 grid grid-cols-1 md:grid-cols-3 gap-6">
         {filteredCompanies.length > 0 ? (
           filteredCompanies.map((company, index) => (
             <CompanyCard key={index} company={company} />
