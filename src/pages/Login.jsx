@@ -5,8 +5,11 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import loginBg from "../assets/login-bgm.jpg";
 import { toast } from "react-toastify";
+import { getStocks } from "../apiManager/stockApiManager";
 
 export default function Login() {
+  const appUrl = import.meta.env.VITE_API_URL;
+  console.log("URL : ",appUrl)
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,13 +20,13 @@ export default function Login() {
       toast.error("Email is required");
       return;
     }
-
+  
     if (!credentials.password) {
       toast.error("Password is required");
       return;
     }
-
-    const response = await fetch("http://localhost:4000/api/user/login", {
+  
+    const response = await fetch(appUrl + "/user/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,12 +41,14 @@ export default function Login() {
     if (json.success) {
       localStorage.setItem("token", json.authToken);
       dispatch(setUser(json.userData));
-      toast("Logged In Successfull")
+      toast("Logged In Successfully");
       navigate("/");
+      dispatch(getStocks()); // Correctly dispatch getStocks
     } else {
       toast.error("Enter Valid Credentials");
     }
   };
+  
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };

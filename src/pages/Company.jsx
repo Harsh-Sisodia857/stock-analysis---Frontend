@@ -1,28 +1,7 @@
 import React, { useState } from "react";
 import CompanyCard from "../components/CompanyCard";
+import { useSelector } from "react-redux";
 
-const companies = [
-  {
-    ticker: "TCS",
-    name: "Tata Consultancy Services",
-    sector: "IT",
-    marketCap: 1200000,
-  },
-  {
-    ticker: "RELIANCE",
-    name: "Reliance Industries",
-    sector: "Energy",
-    marketCap: 1700000,
-  },
-  { ticker: "INFY", name: "Infosys", sector: "IT", marketCap: 900000 },
-  { ticker: "HDFC", name: "HDFC Bank", sector: "Banking", marketCap: 1100000 },
-  {
-    ticker: "ADANIPORTS",
-    name: "Adani Ports",
-    sector: "Infrastructure",
-    marketCap: 600000,
-  },
-];
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
@@ -35,7 +14,8 @@ const getMarketCapCategory = (marketCap) => {
 function Company() {
   const [searchTerm, setSearchTerm] = useState("");
   const [marketCapFilter, setMarketCapFilter] = useState("");
-
+  const {stocks : companies} = useSelector((state) => state.stocks);
+  console.log("COMPANIES : ", companies)
   const filteredCompanies = companies.filter((company) => {
     const matchesSector = company.sector
       .toLowerCase()

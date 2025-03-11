@@ -1,7 +1,33 @@
+import { useEffect, useState } from "react";
 import InfoButton from "../components/InfoButton";
 import { PieChart } from "../components/PieChart";
 
 function Stocks() {
+  const appUrl = import.meta.env.VITE_API_URL;
+  const [stock, setStock] = useState(null);
+
+  const getStockDetail = async () => {
+    try {
+      const response = await fetch(appUrl + "/user/getUser", {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        }
+      });
+      const json = await response.json();
+      if (json.success) {
+        setStock(json.stock)
+      } else {
+        console.log("Error fetching User Data");
+      }
+    } catch (error) {
+      
+    }
+  }
+  
+
+
   const tooltips = {
     marketCap: "Total market value of a company's outstanding shares.",
     enterpriseValue:
@@ -33,29 +59,29 @@ function Stocks() {
           className="text-blue-600 hover:underline text-xl font-medium"
           href="/companies"
         >
-          Company
+          {stock?.ticker}
         </a>
         <span className="text-xl font-medium"> {">"} </span>
         <a
           className="text-blue-600 hover:underline text-xl font-medium"
           href="/:company"
         >
-          Company Name
+          {stock?.name}
         </a>
       </div>
 
-      <h1 className="font-bold text-3xl text-gray-900 mb-4">Company Name</h1>
+      <h1 className="font-bold text-3xl text-gray-900 mb-4">{stock?.name}</h1>
 
       <div className="grid grid-cols-2 gap-4 text-gray-700 mb-6">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="font-semibold text-lg mb-2">Sector</h2>
-          <p>Energy</p>
+          <p>{stock?.sector}</p>
           <h2 className="font-semibold text-lg mt-2">Sub-Sector</h2>
-          <p>Oil</p>
+          <p>{stock["Sub-Sector"]}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="font-semibold text-lg mb-2">NSE/BSE</h2>
-          <p>TICKER</p>
+          <p>{stock?.ticker}</p>
         </div>
       </div>
 
@@ -64,106 +90,106 @@ function Stocks() {
         <div className="grid grid-cols-3 text-center">
           <div>
             <p className="text-gray-500">CURRENT PRICE</p>
-            <p className="font-semibold text-lg">₹405.3</p>
+            <p className="font-semibold text-lg">₹{stock["Close Price"]}</p>
           </div>
           <div>
             <p className="text-gray-500">52 WEEK HIGH</p>
-            <p className="font-semibold text-lg">₹538.1</p>
+            <p className="font-semibold text-lg">₹{(stock["Close Price"] * 1.1).toFixed(1)}</p> {/* Example dynamic value */}
           </div>
           <div>
             <p className="text-gray-500">52 WEEK LOW</p>
-            <p className="font-semibold text-lg">₹332.9</p>
+            <p className="font-semibold text-lg">₹{(stock["Close Price"] * 0.9).toFixed(1)}</p> {/* Example dynamic value */}
           </div>
         </div>
       </div>
 
       <div className="flex items-stretch gap-4">
         <div className="bg-white p-6 rounded-lg shadow-md w-[50%]">
-          <h2 className="font-semibold text-xl mb-4">Company Essential</h2>
+          <h2 className="font-semibold text-xl mb-4">Company Essentials</h2>
           <div className="grid grid-cols-3 gap-6 text-gray-700 text-center">
             <div>
               <p className="font-semibold">
-                Market Cap <InfoButton text={tooltips.marketCap} />
+                Market Cap <InfoButton text={"Market Cap tooltip"} />
               </p>
-              <p className="text-lg">₹5,05,293.34 Cr.</p>
+              <p className="text-lg">₹{(stock["Market Cap"] / 1e5).toFixed(2)} Cr.</p>
             </div>
             <div>
               <p className="font-semibold">
-                Enterprise Value <InfoButton text={tooltips.enterpriseValue} />
+                Enterprise Value <InfoButton text={"Enterprise Value tooltip"} />
               </p>
-              <p className="text-lg">₹4,99,078.93 Cr.</p>
+              <p className="text-lg">₹{(stock["Market Cap"] - stock["Total Debt"]).toFixed(2)} Cr.</p>
             </div>
             <div>
               <p className="font-semibold">
-                No. of Shares <InfoButton text={tooltips.noOfShares} />
+                No. of Shares <InfoButton text={"No. of Shares tooltip"} />
               </p>
-              <p className="text-lg">1,251.35 Cr.</p>
+              <p className="text-lg">{stock["Common Shares Outstanding"].toFixed(2)} Cr.</p>
             </div>
             <div>
               <p className="font-semibold">
-                P/E <InfoButton text={tooltips.peRatio} />
+                P/E <InfoButton text={"P/E tooltip"} />
               </p>
-              <p className="text-lg">24.72</p>
+              <p className="text-lg">{stock["PE Ratio"].toFixed(2)}</p>
             </div>
             <div>
               <p className="font-semibold">
-                P/B <InfoButton text={tooltips.pbRatio} />
+                P/B <InfoButton text={"P/B tooltip"} />
               </p>
-              <p className="text-lg">6.45</p>
+              <p className="text-lg">{stock["PB Ratio"].toFixed(2)}</p>
             </div>
             <div>
               <p className="font-semibold">
-                Face Value <InfoButton text={tooltips.faceValue} />
+                Face Value <InfoButton text={"Face Value tooltip"} />
               </p>
               <p className="text-lg">₹1</p>
             </div>
             <div>
               <p className="font-semibold">
-                Div. Yield <InfoButton text={tooltips.divYield} />
+                Div. Yield <InfoButton text={"Div. Yield tooltip"} />
               </p>
-              <p className="text-lg">3.41%</p>
+              <p className="text-lg">{stock["Div. Yield(%)"].toFixed(2)}%</p>
             </div>
             <div>
               <p className="font-semibold">
-                Book Value (TTM) <InfoButton text={tooltips.bookValue} />
+                Book Value (TTM) <InfoButton text={"Book Value tooltip"} />
               </p>
-              <p className="text-lg">₹62.63</p>
+              <p className="text-lg">₹{(stock["Total Equity"] / stock["Common Shares Outstanding"]).toFixed(2)}</p>
             </div>
             <div>
               <p className="font-semibold">Cash</p>
-              <p className="text-lg">₹6,217.69 Cr.</p>
+              <p className="text-lg">₹{(stock["Reserve Surplus"]).toFixed(2)} Cr.</p>
             </div>
             <div>
               <p className="font-semibold">Debt</p>
-              <p className="text-lg">₹3.28 Cr.</p>
+              <p className="text-lg">₹{(stock["Total Debt"]).toFixed(2)} Cr.</p>
             </div>
             <div>
               <p className="font-semibold">Promoter Holding</p>
-              <p className="text-lg">0%</p>
+              <p className="text-lg">{(stock["Promoter Holding(%)"]).toFixed(2)}%</p>
             </div>
             <div>
               <p className="font-semibold">
-                EPS (TTM) <InfoButton text={tooltips.enterpriseValue} />
+                EPS (TTM) <InfoButton text={"EPS tooltip"} />
               </p>
-              <p className="text-lg">₹16.33</p>
+              <p className="text-lg">₹{(stock["EPS"]).toFixed(2)}</p>
             </div>
             <div>
               <p className="font-semibold">
-                Sales Growth <InfoButton text={tooltips.salesGrowth} />
+                Sales Growth <InfoButton text={"Sales Growth tooltip"} />
               </p>
-              <p className="text-lg">-0.91%</p>
+              <p className="text-lg">{(stock["5Y Rev. Growth(%)"]).toFixed(2)}%</p>
             </div>
             <div>
               <p className="font-semibold">
-                ROE <InfoButton text={tooltips.roe} />
+                ROE <InfoButton text={"ROE tooltip"} />
               </p>
-              <p className="text-lg">29.47%</p>
+              <p className="text-lg">{(stock["ROE"]).toFixed(2)}%</p>
             </div>
             <div>
               <p className="font-semibold">
-                ROCE <InfoButton text={tooltips.roce} />
+                ROCE <InfoButton text={"ROCE tooltip"} />
               </p>
-              <p className="text-lg">37.75%</p>
+              <p className="text-lg">{(stock["5Y Avg ROE"]).toFixed(2)}%</p>
             </div>
           </div>
         </div>

@@ -9,8 +9,22 @@ import SignUp from "./pages/Signup";
 import { ToastContainer } from 'react-toastify';
 import Stocks from "./pages/Stocks";
 import Company from "./pages/Company";
+import WebFont from 'webfontloader';
+import { useEffect } from "react";
 
 function App() {
+
+  useEffect(() => {
+  
+    WebFont.load({
+      google: {
+        families: ['Sofia Sans','Droid Sans', 'Droid Serif']
+        // families: ["Roboto", "Open Sans", "Lato"]
+      }
+    })
+
+  }, [])
+
   return (
     <>
       <Navbar />

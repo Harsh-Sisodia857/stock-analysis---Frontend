@@ -1,3 +1,8 @@
+*{
+  font-family: "Sofia Sans";
+}
+
+
 .button-29 {
     background-color: #111827;
     border: 1px solid transparent;
@@ -33,3 +38,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
   
+  .logo-heading{
+    font: 400 1.3vmax "Droid Sans";
+  }

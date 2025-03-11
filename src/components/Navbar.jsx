@@ -22,7 +22,7 @@ function Navbar() {
           
           <a href="/" className="flex items-center space-x-2">
             <img src={logo} alt="Stock Analysis" className="h-12 w-auto" />
-            <p className="text-[#d0a933] text-2xl font-bold"> STOCK ANALYSIS</p>
+            <p className="logo-heading text-[#d0a933] text-2xl font-bold"> STOCK ANALYSIS</p>
           </a>
 
           {/* Desktop Menu */}

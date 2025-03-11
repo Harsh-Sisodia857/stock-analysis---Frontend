@@ -4,10 +4,11 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import signup from "../assets/signup-bg.jpg";  
 import { toast } from 'react-toastify';
-
+import { getStocks } from "../apiManager/stockApiManager";
 
 
 const SignUp = () => {
+  const appUrl = import.meta.env.VITE_API_URL;
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
@@ -32,7 +33,7 @@ const SignUp = () => {
       return;
     }
 
-    const response = await fetch("http://localhost:4000/api/user/signup",{
+    const response = await fetch(appUrl + "/user/signup",{
       method : 'POST',
       headers : {
         'Content-Type' : 'application/json'
@@ -50,6 +51,7 @@ const SignUp = () => {
       localStorage.setItem('token', json.authToken);
       dispatch(setUser(json.userData));
       toast("Logged In Successfull");
+      getStocks(dispatch)
       navigate('/');
     } else {
       toast.error('Enter Valid Credentials');
