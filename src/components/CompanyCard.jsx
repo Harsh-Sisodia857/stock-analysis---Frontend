@@ -5,7 +5,7 @@ const roundToDecimal = (value, decimals) => {
   return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
 };
 
-function CompanyCard({ company }) {
+function CompanyCard({ company, onSelectTicker }) {
   // Handle Close Price (Random if missing)
   const closePrice =
     company["Close Price"] != null ? company["Close Price"].toString() : "N/A";
@@ -19,6 +19,10 @@ function CompanyCard({ company }) {
   // Handle PE Ratio (Random if negative)
   const peRatio =
     company["PE Ratio"] >= 0 ? roundToDecimal(company["PE Ratio"], 2) : "N/A";
+
+  const handleDetailsClick = () => {
+    onSelectTicker(company.ticker);
+  };
 
   return (
     <div className="bg-white px-6 pt-5 pb-4 rounded-lg shadow-md border border-gray-200 w-full mx-auto">
@@ -50,9 +54,9 @@ function CompanyCard({ company }) {
       </div>
 
       <div className="flex justify-center items-center mt-3">
-      <button className="px-6 py-1 cursor-pointer w-[36%] text-lg font-semibold text-white transition-all duration-300 ease-in-out transform bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg hover:from-indigo-500 hover:to-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
-        Details
-      </button>
+        <button onClick={handleDetailsClick} className="px-6 py-1 cursor-pointer w-[36%] text-lg font-semibold text-white transition-all duration-300 ease-in-out transform bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg hover:from-indigo-500 hover:to-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+          Details
+        </button>
       </div>
     </div>
   );

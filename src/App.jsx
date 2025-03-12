@@ -38,7 +38,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="pt-16">
+      <div className="pt-6">
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -47,7 +47,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/company" element={<Company />} />
-          <Route path="/company/stock" element={<Stocks />} />
+          <Route path="/company/:ticker" element={<Stocks />} />
         </Routes>
       </div>
     </>

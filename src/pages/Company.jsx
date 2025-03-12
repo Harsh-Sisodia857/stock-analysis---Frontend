@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CompanyCard from "../components/CompanyCard";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 // Function to categorize market caps
@@ -15,8 +16,14 @@ const getMarketCapCategory = (marketCap) => {
 function Company() {
   const [searchTerm, setSearchTerm] = useState("");
   const [marketCapFilter, setMarketCapFilter] = useState("");
+  const navigate = useNavigate();
   const {stocks : companies} = useSelector((state) => state.stocks);
-  console.log("COMPANIES : ", companies)
+  
+  const handleTickerSelect = (ticker) => {
+    navigate(`/company/${ticker}`);
+  };
+
+
   const filteredCompanies = companies.filter((company) => {
     const matchesSector = company.sector
       .toLowerCase()
@@ -74,7 +81,7 @@ function Company() {
       <div className="mx-2 grid grid-cols-1 md:grid-cols-3 gap-6">
         {filteredCompanies.length > 0 ? (
           filteredCompanies.map((company, index) => (
-            <CompanyCard key={index} company={company} />
+            <CompanyCard key={index} company={company} onSelectTicker={handleTickerSelect}/>
           ))
         ) : (
           <p className="text-gray-600">No companies match your search.</p>

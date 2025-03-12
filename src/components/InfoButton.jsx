@@ -7,7 +7,10 @@ function InfoButton({ text }) {
         <button
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
-          className="ml-2 p-1 w-7 h-7 rounded-full bg-gray-200 text-blue-600 italic hover:bg-gray-300 flex items-center justify-center"
+          style={{
+            fontFamily : 'sans-serif'
+          }}
+          className="ml-1 p-1 w-7 h-7 rounded-full bg-[#96aac1] text-white italic hover:bg-gray-300 flex items-center justify-center"
         >
           i
         </button>
