@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import InfoButton from "../components/InfoButton";
 import { PieChart } from "../components/PieChart";
-import { useParams } from "react-router-dom";
+import { redirect, useParams } from "react-router-dom";
+import NotFound from "../components/NotFound";
 
 function Stocks() {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -26,7 +27,8 @@ function Stocks() {
       if (json.success) {
         setStock(json.stock);
       } else {
-        console.log("Error fetching User Data");
+        console.log("Error fetching Stock Data");
+        setStock(null);
       }
     } catch (error) {
       console.log("Error fetching User Data:", error);
@@ -68,6 +70,9 @@ function Stocks() {
     roce: "Return on Capital Employed, measuring profitability and efficiency.",
   };
 
+  if(stock === null) return <NotFound/>
+
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="text-sm text-gray-600 mb-4">
@@ -85,9 +90,7 @@ function Stocks() {
           Companies
         </a>
         <span className="text-xl font-medium"> {">"} </span>
-        <a
-          className="text-blue-600 hover:underline text-xl font-medium"
-        >
+        <a className="text-blue-600 hover:underline text-xl font-medium">
           {stock?.name}
         </a>
       </div>
@@ -98,8 +101,12 @@ function Stocks() {
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="font-semibold text-lg mb-2">Sector</h2>
           <p>{stock?.sector}</p>
-          <h2 className="font-semibold text-lg mt-2">Sub-Sector</h2>
-          <p>{stock["Sub-Sector"]}</p>
+          {stock["Sub-Sector"].length > 0 && (
+            <>
+              <h2 className="font-semibold text-lg mt-2">Sub-Sector</h2>
+              <p>{stock["Sub-Sector"]}</p>
+            </>
+          )}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="font-semibold text-lg mb-2">NSE/BSE</h2>
@@ -112,113 +119,147 @@ function Stocks() {
         <div className="grid grid-cols-3 text-center">
           <div>
             <p className="text-gray-500">CURRENT PRICE</p>
-            <p className="font-semibold text-lg">₹{formatNumber(stock["Close Price"])}</p>
+            <p className="font-semibold text-lg">
+              ₹{formatNumber(stock["Close Price"])}
+            </p>
           </div>
           <div>
             <p className="text-gray-500">52 WEEK HIGH</p>
-            <p className="font-semibold text-lg">₹{formatNumber(stock["Close Price"] * 1.1)}</p>
+            <p className="font-semibold text-lg">
+              ₹{formatNumber(stock["Close Price"] * 1.1)}
+            </p>
           </div>
           <div>
             <p className="text-gray-500">52 WEEK LOW</p>
-            <p className="font-semibold text-lg">₹{formatNumber(stock["Close Price"] * 0.9)}</p>
+            <p className="font-semibold text-lg">
+              ₹{formatNumber(stock["Close Price"] * 0.9)}
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="flex items-stretch gap-4">
-        <div className="bg-white p-6 rounded-lg shadow-md w-[50%]">
+      <div className="flex items-stretch gap-4 h-full">
+        <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex-1">
           <h2 className="font-semibold text-xl mb-4">Company Essentials</h2>
           <div className="grid grid-cols-3 gap-6 text-gray-700 text-center">
             <div>
               <p className="font-semibold">
-                Market Cap <InfoButton text={"Market Cap tooltip"} />
+                Market Cap <InfoButton text={tooltips.marketCap} />
               </p>
-              <p className="text-lg">₹{formatNumber(stock["Market Cap"] / 1e5)} Cr.</p>
+              <p className="text-lg">
+                ₹{formatNumber(stock["Market Cap"] / 1e5)} Cr.
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                Enterprise Value <InfoButton text={"Enterprise Value tooltip"} />
+                Enterprise Value <InfoButton text={tooltips.enterpriseValue} />
               </p>
-              <p className="text-lg">₹{formatNumber(stock["Market Cap"] - stock["Total Debt"])} Cr.</p>
+              <p className="text-lg">
+                ₹{formatNumber(stock["Market Cap"] - stock["Total Debt"])} Cr.
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                No. of Shares <InfoButton text={"No. of Shares tooltip"} />
+                No. of Shares <InfoButton text={tooltips.noOfShares} />
               </p>
-              <p className="text-lg">{formatNumber(stock["Common Shares Outstanding"])} Cr.</p>
+              <p className="text-lg">
+                {formatNumber(stock["Common Shares Outstanding"])} Cr.
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                P/E <InfoButton text={"P/E tooltip"} />
+                P/E <InfoButton text={tooltips.peRatio} />
               </p>
               <p className="text-lg">{formatNumber(stock["PE Ratio"])}</p>
             </div>
             <div>
               <p className="font-semibold">
-                P/B <InfoButton text={"P/B tooltip"} />
+                P/B <InfoButton text={tooltips.pbRatio} />
               </p>
               <p className="text-lg">{formatNumber(stock["PB Ratio"])}</p>
             </div>
             <div>
               <p className="font-semibold">
-                Face Value <InfoButton text={"Face Value tooltip"} />
+                Face Value <InfoButton text={tooltips.faceValue} />
               </p>
               <p className="text-lg">₹1</p>
             </div>
             <div>
               <p className="font-semibold">
-                Div. Yield <InfoButton text={"Div. Yield tooltip"} />
+                Div. Yield <InfoButton text={tooltips.divYield} />
               </p>
-              <p className="text-lg">{formatNumber(stock["Div. Yield(%)"]) == "N/A" ? "N/A" : formatNumber(stock["Div. Yield(%)"]) + "%"}</p>
+              <p className="text-lg">
+                {formatNumber(stock["Div. Yield(%)"]) == "N/A"
+                  ? "N/A"
+                  : formatNumber(stock["Div. Yield(%)"]) + "%"}
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                Book Value (TTM) <InfoButton text={"Book Value tooltip"} />
+                Book Value (TTM) <InfoButton text={tooltips.bookValue} />
               </p>
-              <p className="text-lg">₹{formatNumber(stock["Total Equity"] / stock["Common Shares Outstanding"])}</p>
+              <p className="text-lg">
+                ₹
+                {formatNumber(
+                  stock["Total Equity"] / stock["Common Shares Outstanding"]
+                )}
+              </p>
             </div>
             <div>
               <p className="font-semibold">Cash</p>
-              <p className="text-lg">₹{formatNumber(stock["Reserve Surplus"])} Cr.</p>
+              <p className="text-lg">
+                ₹{formatNumber(stock["Reserve Surplus"])} Cr.
+              </p>
             </div>
             <div>
               <p className="font-semibold">Debt</p>
-              <p className="text-lg">₹{formatNumber(stock["Total Debt"])} Cr.</p>
+              <p className="text-lg">
+                ₹{formatNumber(stock["Total Debt"])} Cr.
+              </p>
             </div>
             <div>
               <p className="font-semibold">Promoter Holding</p>
-              <p className="text-lg">{formatNumber(stock["Promoter Holding(%)"])}%</p>
+              <p className="text-lg">
+                {formatNumber(stock["Promoter Holding(%)"])}%
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                EPS (TTM) <InfoButton text={"EPS tooltip"} />
+                EPS (TTM) <InfoButton text={tooltips.eps} />
               </p>
               <p className="text-lg">₹{formatNumber(stock["EPS"])}</p>
             </div>
             <div>
               <p className="font-semibold">
-                Sales Growth <InfoButton text={"Sales Growth tooltip"} />
+                Sales Growth <InfoButton text={tooltips.salesGrowth} />
               </p>
-              <p className="text-lg">{formatNumber(stock["5Y Rev. Growth(%)"])}%</p>
+              <p className="text-lg">
+                {formatNumber(stock["5Y Rev. Growth(%)"])}%
+              </p>
             </div>
             <div>
               <p className="font-semibold">
-                ROE <InfoButton text={"ROE tooltip"} />
+                ROE <InfoButton text={tooltips.roe} />
               </p>
               <p className="text-lg">{formatNumber(stock["ROE"])}%</p>
             </div>
             <div>
               <p className="font-semibold">
-                ROCE <InfoButton text={"ROCE tooltip"} />
+                ROCE <InfoButton text={tooltips.roce} />
               </p>
               <p className="text-lg">{formatNumber(stock["5Y Avg ROE"])}%</p>
             </div>
           </div>
         </div>
 
-
-        <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex items-center justify-center">
-          <PieChart />
+        <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex flex-1 items-center justify-center">
+          <PieChart
+            MutualFundsHolding={stock["MF Holding(%)"]}
+            FIIHolding={stock["FII Holding(%)"]}
+            DIIHolding={stock["DII Holding(%)"]}
+            PromoterHolding={stock["Promoter Holding(%)"]}
+            PromoterPledge={stock["Promoter Pledges(%)"]}
+          />
         </div>
       </div>
     </div>

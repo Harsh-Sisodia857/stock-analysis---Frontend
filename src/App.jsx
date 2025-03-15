@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { loadStocksThunk } from "./store/slice/stockSlice";
 import { getStocks } from "./indexedDB";
 import { useDispatch } from "react-redux";
+import NotFound from "./components/NotFound";
 
 function App() {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/company" element={<Company />} />
           <Route path="/company/:ticker" element={<Stocks />} />
+          <Route path='*' element={<NotFound/>} />
         </Routes>
       </div>
     </>

@@ -32,6 +32,7 @@ function Navbar() {
                 <a href="/" className="text-white hover:text-blue-300 transition">Home</a>
                 <a href="/about" className="text-white hover:text-blue-300 transition">About Us</a>
                 <a href="/mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+                <a href="/company" className="text-white hover:text-blue-300 transition">All Companies</a>
               </>
             ) : (
               <>
@@ -41,7 +42,7 @@ function Navbar() {
             )}
 
             {localStorage.getItem("token") ? (
-              <button onClick={handleLogout} className="text-white hover:text-blue-300 transition">Logout</button>
+              <a onClick={handleLogout} className="text-white hover:text-blue-300 transition cursor-pointer">Logout</a>
             ) : (
               <>
                 <a href="/login" className="text-white hover:text-blue-300 transition">Login</a>
@@ -66,6 +67,7 @@ function Navbar() {
                 <a href="/" className="text-white hover:text-blue-300 transition">Home</a>
                 <a href="/about" className="text-white hover:text-blue-300 transition">About Us</a>
                 <a href="/mutual_funds" className="text-white hover:text-blue-300 transition">Mutual Funds</a>
+                <a href="/company" className="text-white hover:text-blue-300 transition">All Companies</a>
               </>
             ) : (
               <>
@@ -75,7 +77,7 @@ function Navbar() {
             )}
 
             {localStorage.getItem("token") ? (
-              <button onClick={handleLogout} className="text-white hover:text-blue-300 transition">Logout</button>
+              <a onClick={handleLogout} className="text-white hover:text-blue-300 transition cursor-pointer">Logout</a>
             ) : (
               <>
                 <a href="/login" className="text-white hover:text-blue-300 transition">Login</a>

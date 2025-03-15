@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CompanyCard from "../components/CompanyCard";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import Pagination from "../components/Pagination";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
@@ -12,17 +12,18 @@ const getMarketCapCategory = (marketCap) => {
   return "Large";                            // ₹50,000 Cr and above
 };
 
-
 function Company() {
   const [searchTerm, setSearchTerm] = useState("");
   const [marketCapFilter, setMarketCapFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [companiesPerPage] = useState(9);
+  
   const navigate = useNavigate();
-  const {stocks : companies} = useSelector((state) => state.stocks);
+  const { stocks: companies } = useSelector((state) => state.stocks);
   
   const handleTickerSelect = (ticker) => {
     navigate(`/company/${ticker}`);
   };
-
 
   const filteredCompanies = companies.filter((company) => {
     const matchesSector = company.sector
@@ -34,6 +35,24 @@ function Company() {
 
     return matchesSector && matchesMarketCap;
   });
+
+  // Calculate pagination
+  const indexOfLastCompany = currentPage * companiesPerPage;
+  const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
+  const currentCompanies = filteredCompanies.slice(indexOfFirstCompany, indexOfLastCompany);
+  const totalPages = Math.ceil(filteredCompanies.length / companiesPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top when page changes
+    window.scrollTo(0, 0);
+  };
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, marketCapFilter]);
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
@@ -77,16 +96,32 @@ function Company() {
         </div>
       </div>
 
+      {/* Results summary */}
+      <div className="mb-4 text-gray-600">
+        <p>
+          Showing {filteredCompanies.length > 0 ? indexOfFirstCompany + 1 : 0} to {Math.min(indexOfLastCompany, filteredCompanies.length)} of {filteredCompanies.length} stocks
+        </p>
+      </div>
+
       {/* Company Cards */}
       <div className="mx-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredCompanies.length > 0 ? (
-          filteredCompanies.map((company, index) => (
+        {currentCompanies.length > 0 ? (
+          currentCompanies.map((company, index) => (
             <CompanyCard key={index} company={company} onSelectTicker={handleTickerSelect}/>
           ))
         ) : (
           <p className="text-gray-600">No companies match your search.</p>
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredCompanies.length > companiesPerPage && (
+        <Pagination
+          currentPage={currentPage} 
+          totalPages={totalPages} 
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
