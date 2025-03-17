@@ -19,6 +19,9 @@ import MutualFundAdminForm from "./pages/admin/CreateMutualFund";
 import UpdateMutualFundPage from "./pages/admin/UpdateMutualFund";
 import StockAdminPage from "./pages/admin/CreateStock";
 import StockUpdatePage from "./pages/admin/UpdateStock";
+import AdminRoute from "./components/AdminRoutes";
+import AuthRedirect from "./components/AuthRedirect";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 function App() {
   const dispatch = useDispatch();
@@ -48,16 +51,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mutual_funds" element={<MutualFund />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/company" element={<Company />} />
-          <Route path="/company/:ticker" element={<Stocks />} />
+          <Route path="/mutual_funds" element={<ProtectedRoute><MutualFund /></ProtectedRoute>} />
+          <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
+          <Route path="/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
+          <Route path="/company" element={<ProtectedRoute><Company /></ProtectedRoute>} />
+          <Route path="/company/:ticker" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
           {/* admin Routes  */}
-          <Route path="/admin_mutual_funds/new" element={<MutualFundAdminForm />} />
-          <Route path="/admin_mutual_funds/update" element={<UpdateMutualFundPage />} />
-          <Route path="/admin_stock/new" element={<StockAdminPage/>} />
-          <Route path="/admin_stock/update" element={<StockUpdatePage/>} />
+          <Route path="/admin_mutual_funds/new" element={<AdminRoute><MutualFundAdminForm /></AdminRoute>} />
+          <Route path="/admin_mutual_funds/update" element={<AdminRoute><UpdateMutualFundPage /></AdminRoute>} />
+          <Route path="/admin_stock/new" element={<AdminRoute><StockAdminPage/></AdminRoute>} />
+          <Route path="/admin_stock/update" element={<AdminRoute><StockUpdatePage/></AdminRoute>} />
           
           <Route path='*' element={<NotFound/>} />
         </Routes>

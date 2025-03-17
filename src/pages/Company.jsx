@@ -3,13 +3,14 @@ import CompanyCard from "../components/CompanyCard";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import { deleteStock } from "../apiManager/stockApiManager";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
-  if (marketCap < 5000) return "Micro";      // Less than ₹5,000 Cr
-  if (marketCap < 20000) return "Small";     // ₹5,000 Cr - ₹20,000 Cr
-  if (marketCap < 50000) return "Mid";       // ₹20,000 Cr - ₹50,000 Cr
-  return "Large";                            // ₹50,000 Cr and above
+  if (marketCap < 5000) return "Micro"; // Less than ₹5,000 Cr
+  if (marketCap < 20000) return "Small"; // ₹5,000 Cr - ₹20,000 Cr
+  if (marketCap < 50000) return "Mid"; // ₹20,000 Cr - ₹50,000 Cr
+  return "Large"; // ₹50,000 Cr and above
 };
 
 function Company() {
@@ -17,10 +18,10 @@ function Company() {
   const [marketCapFilter, setMarketCapFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [companiesPerPage] = useState(9);
-  
+
   const navigate = useNavigate();
   const { stocks: companies } = useSelector((state) => state.stocks);
-  
+
   const handleTickerSelect = (ticker) => {
     navigate(`/company/${ticker}`);
   };
@@ -39,14 +40,30 @@ function Company() {
   // Calculate pagination
   const indexOfLastCompany = currentPage * companiesPerPage;
   const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
-  const currentCompanies = filteredCompanies.slice(indexOfFirstCompany, indexOfLastCompany);
+  const currentCompanies = filteredCompanies.slice(
+    indexOfFirstCompany,
+    indexOfLastCompany
+  );
   const totalPages = Math.ceil(filteredCompanies.length / companiesPerPage);
-
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     // Scroll to top when page changes
     window.scrollTo(0, 0);
+  };
+
+  const handleDelete = async (ticker) => {
+    const response = await deleteStock(ticker);
+    if (response.success) {
+      toast("Stock Delete Successfully");
+    } else {
+      toast("Failed to Delete!!");
+    }
+  };
+
+  const handleEdit = (ticker) => {
+    console.log("TICKER : ", ticker);
+    navigate("/admin_mutual_funds/update", { state: { ticker } });
   };
 
   // Reset to first page when filters change
@@ -99,7 +116,9 @@ function Company() {
       {/* Results summary */}
       <div className="mb-4 text-gray-600">
         <p>
-          Showing {filteredCompanies.length > 0 ? indexOfFirstCompany + 1 : 0} to {Math.min(indexOfLastCompany, filteredCompanies.length)} of {filteredCompanies.length} stocks
+          Showing {filteredCompanies.length > 0 ? indexOfFirstCompany + 1 : 0}{" "}
+          to {Math.min(indexOfLastCompany, filteredCompanies.length)} of{" "}
+          {filteredCompanies.length} stocks
         </p>
       </div>
 
@@ -107,7 +126,13 @@ function Company() {
       <div className="mx-2 grid grid-cols-1 md:grid-cols-3 gap-6">
         {currentCompanies.length > 0 ? (
           currentCompanies.map((company, index) => (
-            <CompanyCard key={index} company={company} onSelectTicker={handleTickerSelect}/>
+            <CompanyCard
+              key={index}
+              company={company}
+              onSelectTicker={handleTickerSelect}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))
         ) : (
           <p className="text-gray-600">No companies match your search.</p>
@@ -117,8 +142,8 @@ function Company() {
       {/* Pagination */}
       {filteredCompanies.length > companiesPerPage && (
         <Pagination
-          currentPage={currentPage} 
-          totalPages={totalPages} 
+          currentPage={currentPage}
+          totalPages={totalPages}
           onPageChange={handlePageChange}
         />
       )}

@@ -25,6 +25,29 @@ export const getStocks = () => {
   };
 };
 
+export const fetchStock = async (ticker) => {
+  try {
+    const appUrl = import.meta.env.VITE_API_URL;
+    const response = await fetch(appUrl + "/stock/" + ticker, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+    const json = await response.json();
+    if (json.success) {
+      const stockData =
+        typeof json.stock === "string" ? JSON.parse(json.stock) : json.stock;
+      console.log("Stock data : ", stock);
+      return stockData;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching stocks:", error);
+  }
+};
+
 export const createStock = async (stock) => {
   try {
     const appUrl = import.meta.env.VITE_API_URL;
@@ -34,18 +57,15 @@ export const createStock = async (stock) => {
         "Content-Type": "application/json",
         "auth-token": localStorage.getItem("token"),
       },
-      body : JSON.stringify(stock)
+      body: JSON.stringify(stock),
     });
     const json = await response.json();
-    const stockData =
-      typeof json.stockData === "string"
-        ? JSON.parse(json.fileData)
-        : json.fileData;
+    
     return json;
   } catch (error) {
     console.error("Error fetching stocks:", error);
   }
-}
+};
 
 export const deleteStock = async (ticker) => {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -70,14 +90,13 @@ export const updateStock = async (ticker, formData) => {
       "Content-Type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
-    body: JSON.stringify(formData)
+    body: JSON.stringify(formData),
   });
 
   const json = await response.json();
 
   return json;
 };
-
 
 export const fetchMutualFund = async (schemeName) => {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -157,7 +176,7 @@ export const updateMutualFund = async (schemeName, formData) => {
       "Content-Type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
-    body: JSON.stringify(formData)
+    body: JSON.stringify(formData),
   });
 
   const json = await response.json();

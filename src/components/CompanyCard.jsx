@@ -1,11 +1,13 @@
+import { FilePenLine, Trash2 } from "lucide-react";
 import React from "react";
+import { useSelector } from "react-redux";
 
 // Utility function to round a number to a specific number of decimal places
 const roundToDecimal = (value, decimals) => {
   return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
 };
 
-function CompanyCard({ company, onSelectTicker }) {
+function CompanyCard({ company, onSelectTicker, onDelete, onEdit }) {
   // Handle Close Price (Random if missing)
   const closePrice =
     company["Close Price"] != null ? company["Close Price"].toString() : "N/A";
@@ -23,20 +25,48 @@ function CompanyCard({ company, onSelectTicker }) {
   const handleDetailsClick = () => {
     onSelectTicker(company.ticker);
   };
+  const { user } = useSelector((state) => state.user);
+  let role = user?.role || "";
 
   return (
     <div className="bg-white px-6 pt-5 pb-4 rounded-lg shadow-md border border-gray-200 w-full mx-auto">
-      <h1 className="text-2xl font-bold text-gray-800">{company.ticker}</h1>
-      <h2 className="text-xl font-semibold text-gray-700">{company.name}</h2>
-      <p className="text-gray-600 mt-2">
-        <span className="font-medium text-gray-800">{company.sector}</span>{" "}
-        {company["Sub-Sector"]?.length > 0 && (
-          <>
-            <span className="font-medium text-gray-800">: </span>
-            <span className="text-blue-600">{company["Sub-Sector"]}</span>
-          </>
+      <div className="flex justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">{company.ticker}</h1>
+          <h2 className="text-xl font-semibold text-gray-700">
+            {company.name}
+          </h2>
+          <p className="text-gray-600 mt-2">
+            <span className="font-medium text-gray-800">{company.sector}</span>{" "}
+            {company["Sub-Sector"]?.length > 0 && (
+              <>
+                <span className="font-medium text-gray-800">: </span>
+                <span className="text-blue-600">{company["Sub-Sector"]}</span>
+              </>
+            )}
+          </p>
+        </div>
+        {role === "admin" && (
+          <div className="flex">
+            <div className="ml-2">
+              <button
+                className="cursor-pointer"
+                onClick={() => onDelete(company.ticker)}
+              >
+                <Trash2 />
+              </button>
+            </div>
+            <div className="ml-2">
+              <button
+                className="cursor-pointer"
+                onClick={() => onEdit(company.ticker)}
+              >
+                <FilePenLine />
+              </button>
+            </div>
+          </div>
         )}
-      </p>
+      </div>
 
       <div className="grid grid-cols-3 gap-4 mt-4">
         <div className="text-center p-2 bg-gray-100 rounded-md">
@@ -54,7 +84,10 @@ function CompanyCard({ company, onSelectTicker }) {
       </div>
 
       <div className="flex justify-center items-center mt-3">
-        <button onClick={handleDetailsClick} className="px-6 py-1 cursor-pointer w-[36%] text-lg font-semibold text-white transition-all duration-300 ease-in-out transform bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg hover:from-indigo-500 hover:to-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+        <button
+          onClick={handleDetailsClick}
+          className="px-6 py-1 cursor-pointer w-[36%] text-lg font-semibold text-white transition-all duration-300 ease-in-out transform bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg hover:from-indigo-500 hover:to-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        >
           Details
         </button>
       </div>

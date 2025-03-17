@@ -120,28 +120,22 @@ function Navbar() {
                     <div className="absolute mt-2 w-64 bg-white rounded-md shadow-lg z-50">
                       <div className="py-1 rounded-md bg-white shadow-xs">
                         <a
-                          href="/admin/stocks"
+                          href="/company"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
                         >
                           <List className="mr-3 h-4 w-4 text-blue-600" />
-                          <span>Manage Stocks</span>
+                          <span>View Stocks</span>
                         </a>
                         <a
-                          href="/admin/stocks/new"
+                          href="/admin_stock/new"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
                         >
                           <Plus className="mr-3 h-4 w-4 text-green-600" />
                           <span>Add New Stock</span>
                         </a>
+
                         <a
-                          href="/admin/stocks/performance"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
-                        >
-                          <TrendingUp className="mr-3 h-4 w-4 text-orange-600" />
-                          <span>Performance Tracking</span>
-                        </a>
-                        <a
-                          href="/admin/stocks/import"
+                          href="/admin_stock/import"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
                         >
                           <Download className="mr-3 h-4 w-4 text-purple-600" />
@@ -181,7 +175,6 @@ function Navbar() {
                     </svg>
                   </button>
 
-                  {/* Admin Mutual Funds Dropdown Menu */}
                   {mutualFundsMenuOpen && (
                     <div className="absolute mt-2 w-64 bg-white rounded-md shadow-lg z-50">
                       <div className="py-1 rounded-md bg-white shadow-xs">
@@ -203,8 +196,8 @@ function Navbar() {
                           href="/admin_mutual_funds/analytics"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
                         >
-                          <BarChart3 className="mr-3 h-4 w-4 text-purple-600" />
-                          <span>Fund Analytics</span>
+                          <Download className="mr-3 h-4 w-4 text-purple-600" />
+                          <span>Import Fund Analytics</span>
                         </a>
                       </div>
                     </div>
@@ -230,7 +223,7 @@ function Navbar() {
                 </a>
                 <a
                   href="/signup"
-                  className="bg-white text-blue-600 px-4 py-1 rounded-md hover:bg-gray-200 transition"
+                  className=" text-white hover:text-blue-300 transition"
                 >
                   Sign Up
                 </a>
@@ -289,24 +282,17 @@ function Navbar() {
                     className="flex items-center text-white hover:text-blue-300 transition py-2 cursor-pointer"
                   >
                     <List className="mr-2 h-4 w-4" />
-                    <span>Manage Stocks</span>
+                    <span>View Stocks</span>
                   </a>
                   <a
-                    href="/admin/stocks/new"
+                    href="/admin_stock/new"
                     className="flex items-center text-white hover:text-blue-300 transition py-2 cursor-pointer"
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     <span>Add New Stock</span>
                   </a>
                   <a
-                    href="/admin/stocks/performance"
-                    className="flex items-center text-white hover:text-blue-300 cursor-pointer transition py-2"
-                  >
-                    <TrendingUp className="mr-2 h-4 w-4" />
-                    <span>Performance Tracking</span>
-                  </a>
-                  <a
-                    href="/admin/stocks/import"
+                    href="/admin_stock/import"
                     className="flex items-center text-white hover:text-blue-300 cursor-pointer transition py-2"
                   >
                     <Download className="mr-2 h-4 w-4" />
@@ -337,8 +323,8 @@ function Navbar() {
                     href="/admin_mutual_funds/analytics"
                     className="flex items-center text-white hover:text-blue-300 transition py-2"
                   >
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    <span>Fund Analytics</span>
+                    <Download className="mr-3 h-4 w-4 text-purple-600" />
+                    <span>Import Fund Analytics</span>
                   </a>
                 </div>
               </>
@@ -361,7 +347,7 @@ function Navbar() {
                 </a>
                 <a
                   href="/signup"
-                  className="bg-white text-blue-600 px-4 py-1 rounded-md hover:bg-gray-200 transition inline-block w-max"
+                  className="text-white hover:text-blue-300 transition"
                 >
                   Sign Up
                 </a>

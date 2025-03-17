@@ -1,6 +1,8 @@
 // StockAdminPage.jsx
 import React, { useState } from "react";
 import { Save } from "lucide-react";
+import { toast } from "react-toastify";
+import { createStock } from "../../apiManager/stockApiManager";
 
 // Reusable Input Field Component
 const InputField = ({
@@ -94,12 +96,15 @@ const StockAdminPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to an API
+    const response = await createStock(stock)
     console.log("Stock data to submit:", stock);
-    // API call would go here
-    alert("Stock data saved successfully!");
+    if(response.success){
+      toast("Stock data saved successfully!");
+    }else{
+      toast.error("Failed to Save the Stock!");
+    }
   };
 
   return (
@@ -112,7 +117,6 @@ const StockAdminPage = () => {
 
           <form onSubmit={handleSubmit} className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Company Information Section */}
               <div className="lg:col-span-3">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                   Company Information

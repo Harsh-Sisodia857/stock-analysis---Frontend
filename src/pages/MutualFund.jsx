@@ -6,7 +6,10 @@ import {
   Trash2,
   FilePenLine,
 } from "lucide-react";
-import { deleteMutualFund, getMutualFunds } from "../apiManager/stockApiManager";
+import {
+  deleteMutualFund,
+  getMutualFunds,
+} from "../apiManager/stockApiManager";
 import Pagination from "../components/Pagination";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -29,7 +32,8 @@ const MutualFundsPage = () => {
   const [expandedFund, setExpandedFund] = useState(null);
 
   let role = user?.role || "";
-  const navigate = useNavigate()
+  console.log("ROLE: ",role)
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchMutualFunds = async () => {
       try {
@@ -47,20 +51,20 @@ const MutualFundsPage = () => {
   }, []);
 
   const handleDelete = async (schemeName) => {
-    console.log("Delete " + schemeName)
+    console.log("Delete " + schemeName);
     const response = await deleteMutualFund(schemeName);
-    console.log("RESPONSE DELTE : ",response)
-    if(response.success){
-      toast(`Mutual Fund with ${schemeName} has been deleted successfully`)
-    }else{
-      toast.error(`Failed to delete Mutual Fund with ${schemeName}`)
+    console.log("RESPONSE DELTE : ", response);
+    if (response.success) {
+      toast(`Mutual Fund with ${schemeName} has been deleted successfully`);
+    } else {
+      toast.error(`Failed to delete Mutual Fund with ${schemeName}`);
     }
-  }
+  };
 
   const handleEdit = (schemeName) => {
     console.log("Edit " + schemeName);
-    navigate('/admin_mutual_funds/update', { state: { schemeName } });
-  }
+    navigate("/admin_mutual_funds/update", { state: { schemeName } });
+  };
 
   // Get unique categories
   const categories = ["All", ...new Set(funds.map((fund) => fund.category))];
@@ -370,16 +374,26 @@ const MutualFundsPage = () => {
                   </div>
                 </div>
 
-                <div className="ml-2">
-                  <button className="cursor-pointer" onClick={() => handleDelete(fund.scheme_name)}>
-                    <Trash2 />
-                  </button>
-                </div>
-                <div className="ml-2" >
-                  <button className="cursor-pointer" onClick={() => handleEdit(fund.scheme_name)}>
-                    <FilePenLine />
-                  </button>
-                </div>
+                {role === "admin" && (
+                  <>
+                    <div className="ml-2">
+                      <button
+                        className="cursor-pointer"
+                        onClick={() => handleDelete(fund.scheme_name)}
+                      >
+                        <Trash2 />
+                      </button>
+                    </div>
+                    <div className="ml-2">
+                      <button
+                        className="cursor-pointer"
+                        onClick={() => handleEdit(fund.scheme_name)}
+                      >
+                        <FilePenLine />
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 <div className="ml-2">
                   {expandedFund === index ? (
@@ -388,7 +402,6 @@ const MutualFundsPage = () => {
                     <ChevronDown className="w-5 h-5" />
                   )}
                 </div>
-
               </div>
 
               {/* Expanded Details */}

@@ -1,8 +1,10 @@
 // StockUpdatePage.jsx
 import React, { useState, useEffect } from "react";
 import { Save, ArrowLeft, RefreshCw } from "lucide-react";
+import { fetchStock, updateStock } from "../../apiManager/stockApiManager";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
-// Reusable Input Field Component - same as before
 const InputField = ({
   label,
   name,
@@ -32,7 +34,6 @@ const InputField = ({
   );
 };
 
-// Form Section Component - to make the form more modular
 const FormSection = ({ title, children }) => {
   return (
     <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -46,13 +47,9 @@ const FormSection = ({ title, children }) => {
   );
 };
 
-// Main Stock Update Page Component
 const StockUpdatePage = () => {
-  // State for loading status
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-
-  // State for stock data
   const [stock, setStock] = useState({
     name: "",
     ticker: "",
@@ -92,58 +89,14 @@ const StockUpdatePage = () => {
     "Div. Yield(%)": "",
     "PB Ratio": 0,
   });
-
-  // Simulating fetching existing stock data
+  const location = useLocation();
+  const ticker = location.state?.ticker || "";
   useEffect(() => {
-    // In a real app, you'd fetch the data from your API
     const fetchStockData = async () => {
       try {
-        // Simulating API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Sample data (same as your example)
-        const stockData = {
-          name: "5Paisa Capital Ltd",
-          ticker: "5PAISA",
-          sector: "Financials",
-          "Sub-Sector": "Diversified Financials",
-          "Close Price": 355.2,
-          "MF Holding -6M(%)": 0,
-          "Promoter Holding-6M(%)": -0.051840703096118546,
-          "DII Holding(%)": 0,
-          "FII Holding(%)": 17.454402385209107,
-          "MF Holding(%)": 0,
-          "Promoter Pledges(%)": 0,
-          "Promoter Holding(%)": 34.5302018920111,
-          "Market Cap": 906.3254073599999,
-          "Quick Ratio": 1.331843862352337,
-          ROI: -2.212958818263203,
-          "Reserve Surplus": -56.64999999999999,
-          "Total Current Assets": 518.62,
-          "Common Shares Outstanding": 2.5477668,
-          "Total Debt": 219.19,
-          "Total Equity": 138.25,
-          "Long Term Debt": 100,
-          "Total Assets": 627.64,
-          "Total Liabilities": 489.39,
-          "Capital Expendixtrure": 11.5,
-          "Operating Cash Flow": -51.74,
-          "Free Cash Flow": -63.24,
-          "Debt To Equity(%)": 158.54611211573237,
-          EPS: 5.76,
-          "Payout Ratio": 0,
-          "Long Term Debt To Equity(%)": 72.33273056057867,
-          "Profit Margin": 7.539702934676471,
-          "Current Ratio": 1.331843862352337,
-          ROE: -8.636314008079477,
-          ROA: -1.738843701912507,
-          "PE Ratio": 61.666666666666664,
-          "Div. Yield(%)": "",
-          "PB Ratio": 6.545871734972876,
-        };
-
+        await fetchStock(ticker);
         setStock(stockData);
-        setIsLoading(false);
+        setIsLoading(false)
       } catch (error) {
         console.error("Error fetching stock data:", error);
         setIsLoading(false);
@@ -157,7 +110,6 @@ const StockUpdatePage = () => {
     const { name, value } = e.target;
     let processedValue = value;
 
-    // Convert numerical inputs to numbers
     if (
       name !== "name" &&
       name !== "ticker" &&
@@ -179,14 +131,12 @@ const StockUpdatePage = () => {
     setIsSaving(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Here you would typically update the data via an API
-      console.log("Stock data to update:", stock);
-
-      // Show success message
-      alert("Stock data updated successfully!");
+      const response = await updateStock(ticker, stock);
+      if(response.json){
+        toast("Stock data updated successfully!");
+      }else{
+        toast.error("Failed to update the stock")
+      }
       setIsSaving(false);
     } catch (error) {
       console.error("Error updating stock:", error);
