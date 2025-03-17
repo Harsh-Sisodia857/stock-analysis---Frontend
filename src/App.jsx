@@ -15,6 +15,10 @@ import { loadStocksThunk } from "./store/slice/stockSlice";
 import { getStocks } from "./indexedDB";
 import { useDispatch } from "react-redux";
 import NotFound from "./components/NotFound";
+import MutualFundAdminForm from "./pages/admin/CreateMutualFund";
+import UpdateMutualFundPage from "./pages/admin/UpdateMutualFund";
+import StockAdminPage from "./pages/admin/CreateStock";
+import StockUpdatePage from "./pages/admin/UpdateStock";
 
 function App() {
   const dispatch = useDispatch();
@@ -49,6 +53,12 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/company" element={<Company />} />
           <Route path="/company/:ticker" element={<Stocks />} />
+          {/* admin Routes  */}
+          <Route path="/admin_mutual_funds/new" element={<MutualFundAdminForm />} />
+          <Route path="/admin_mutual_funds/update" element={<UpdateMutualFundPage />} />
+          <Route path="/admin_stock/new" element={<StockAdminPage/>} />
+          <Route path="/admin_stock/update" element={<StockUpdatePage/>} />
+          
           <Route path='*' element={<NotFound/>} />
         </Routes>
       </div>

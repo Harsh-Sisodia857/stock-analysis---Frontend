@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
-import { getMutualFunds } from "../apiManager/stockApiManager";
+import {
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  FilePenLine,
+} from "lucide-react";
+import { deleteMutualFund, getMutualFunds } from "../apiManager/stockApiManager";
 import Pagination from "../components/Pagination";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const MutualFundsPage = () => {
   const [funds, setFunds] = useState([]);
@@ -13,12 +22,14 @@ const MutualFundsPage = () => {
     key: "scheme_name",
     direction: "ascending",
   });
+  const { user } = useSelector((state) => state.user);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedRating, setSelectedRating] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedFund, setExpandedFund] = useState(null);
 
- 
+  let role = user?.role || "";
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchMutualFunds = async () => {
       try {
@@ -34,6 +45,22 @@ const MutualFundsPage = () => {
 
     fetchMutualFunds();
   }, []);
+
+  const handleDelete = async (schemeName) => {
+    console.log("Delete " + schemeName)
+    const response = await deleteMutualFund(schemeName);
+    console.log("RESPONSE DELTE : ",response)
+    if(response.success){
+      toast(`Mutual Fund with ${schemeName} has been deleted successfully`)
+    }else{
+      toast.error(`Failed to delete Mutual Fund with ${schemeName}`)
+    }
+  }
+
+  const handleEdit = (schemeName) => {
+    console.log("Edit " + schemeName);
+    navigate('/admin_mutual_funds/update', { state: { schemeName } });
+  }
 
   // Get unique categories
   const categories = ["All", ...new Set(funds.map((fund) => fund.category))];
@@ -97,7 +124,7 @@ const MutualFundsPage = () => {
   };
 
   const handleReturnNotAvailable = (returns) => {
-    if (returns.length === 0) return "NA";
+    if (returns?.length === 0) return "NA";
     return returns + "%";
   };
 
@@ -132,9 +159,11 @@ const MutualFundsPage = () => {
   //This gives the index of the last mutual fund item on the current page.
   const indexOfLastPage = currentPage * mutualFundsPerPage;
   const indexOfFirstPage = indexOfLastPage - mutualFundsPerPage;
-  const currentMutualFunds = filteredFunds.slice(indexOfFirstPage, indexOfLastPage);
+  const currentMutualFunds = filteredFunds.slice(
+    indexOfFirstPage,
+    indexOfLastPage
+  );
   const totalPages = Math.ceil(filteredFunds.length / mutualFundsPerPage);
-
 
   if (isLoading) {
     return (
@@ -267,7 +296,8 @@ const MutualFundsPage = () => {
 
         {/* Results Count */}
         <div className="mb-4 text-gray-600">
-          Showing {filteredFunds.length > 0 ? indexOfFirstPage + 1 : 0 } to {Math.min(indexOfLastPage, funds.length)} of {funds.length} funds
+          Showing {filteredFunds.length > 0 ? indexOfFirstPage + 1 : 0} to{" "}
+          {Math.min(indexOfLastPage, funds.length)} of {funds.length} funds
         </div>
 
         {/* Funds List */}
@@ -341,12 +371,24 @@ const MutualFundsPage = () => {
                 </div>
 
                 <div className="ml-2">
+                  <button className="cursor-pointer" onClick={() => handleDelete(fund.scheme_name)}>
+                    <Trash2 />
+                  </button>
+                </div>
+                <div className="ml-2" >
+                  <button className="cursor-pointer" onClick={() => handleEdit(fund.scheme_name)}>
+                    <FilePenLine />
+                  </button>
+                </div>
+
+                <div className="ml-2">
                   {expandedFund === index ? (
                     <ChevronUp className="w-5 h-5" />
                   ) : (
                     <ChevronDown className="w-5 h-5" />
                   )}
                 </div>
+
               </div>
 
               {/* Expanded Details */}
@@ -551,12 +593,12 @@ const MutualFundsPage = () => {
         </div>
 
         {filteredFunds.length > mutualFundsPerPage && (
-        <Pagination
-          currentPage={currentPage} 
-          totalPages={totalPages} 
-          onPageChange={handlePageChange}
-        />
-      )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );
