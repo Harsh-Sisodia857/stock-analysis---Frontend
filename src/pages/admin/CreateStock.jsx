@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Save } from "lucide-react";
 import { toast } from "react-toastify";
 import { createStock } from "../../apiManager/stockApiManager";
+import { useNavigate } from "react-router-dom";
 
 // Reusable Input Field Component
 const InputField = ({
@@ -75,6 +76,8 @@ const StockAdminPage = () => {
     "PB Ratio": 0,
   });
 
+  const navigate = useNavigate()
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let processedValue = value;
@@ -96,17 +99,27 @@ const StockAdminPage = () => {
     }));
   };
 
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await createStock(stock)
-    console.log("Stock data to submit:", stock);
-    if(response.success){
-      toast("Stock data saved successfully!");
-    }else{
-      toast.error("Failed to Save the Stock!");
+    
+    try {
+      console.log("Stock data to submit:", stock);
+      
+      const response = await createStock(stock);
+  
+      if (response.success) {
+        toast.success("Stock created successfully!");
+      } else {
+        throw new Error("Failed to create the stock");
+      }
+    } catch (error) {
+      console.error("Error creating stock:", error);
+      toast.error(error.message || "Failed to create the stock!");
+    } finally {
+      navigate('/'); 
     }
   };
-
+  
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

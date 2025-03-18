@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { Save, ArrowLeft, RefreshCw } from "lucide-react";
 import { fetchStock, updateStock } from "../../apiManager/stockApiManager";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setStock } from "../../store/slice/stockSlice";
 
 const InputField = ({
   label,
@@ -50,7 +52,12 @@ const FormSection = ({ title, children }) => {
 const StockUpdatePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [stock, setStock] = useState({
+  const location = useLocation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  
+  const ticker = location.state?.ticker || "";
+  const [stock, setStockData] = useState({
     name: "",
     ticker: "",
     sector: "",
@@ -92,15 +99,16 @@ const StockUpdatePage = () => {
   useEffect(() => {
     const fetchStockData = async () => {
       try {
-        await fetchStock();
-        setStock(stockData);
+        let stockData = await fetchStock(ticker);
+        console.log(stockData)
+        setStockData(stockData);
         setIsLoading(false)
       } catch (error) {
         console.error("Error fetching stock data:", error);
         setIsLoading(false);
       }
     };
-
+    
     fetchStockData();
   }, []);
 
@@ -118,7 +126,7 @@ const StockUpdatePage = () => {
       processedValue = value === "" ? "" : Number(value);
     }
 
-    setStock((prevStock) => ({
+    setStockData((prevStock) => ({
       ...prevStock,
       [name]: processedValue,
     }));
@@ -130,39 +138,39 @@ const StockUpdatePage = () => {
 
     try {
       const response = await updateStock(ticker, stock);
-      if(response.json){
+      if(response.success){
         toast("Stock data updated successfully!");
+        let stock = response.updatedData;
+        console.log("STOCK FROM RES : ", stock)
+        dispatch(setStock(stock));
+   
       }else{
         toast.error("Failed to update the stock")
       }
       setIsSaving(false);
     } catch (error) {
-      console.error("Error updating stock:", error);
-      alert("Failed to update stock. Please try again.");
+      console.log("Error updating stock:", error);
+      toast.error("Failed to update stock. Please try again.");
       setIsSaving(false);
+    }finally{
+      navigate('/')
     }
   };
 
-  if (isLoading) {
+  if (!isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-center">
-          <RefreshCw className="w-12 h-12 mx-auto text-blue-500 animate-spin" />
-          <p className="mt-4 text-lg text-gray-700">Loading stock data...</p>
-        </div>
-      </div>
+      <Loading message={"Loading stock detail"}/>
     );
   }
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
             <button
               className="mr-4 p-2 rounded-full hover:bg-gray-200 transition-colors"
-              onClick={() => window.history.back()} // In a real app, use router
+              onClick={() => window.history.back()} 
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
@@ -185,7 +193,7 @@ const StockUpdatePage = () => {
               type="button"
               onClick={handleSubmit}
               disabled={isSaving}
-              className={`flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+              className={`flex items-center px-4 py-2 bg-blue-600 cursor-pointer text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
                 isSaving ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -492,7 +500,7 @@ const StockUpdatePage = () => {
             <button
               type="submit"
               disabled={isSaving}
-              className={`w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+              className={`w-full flex items-center justify-center px-4 py-3 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
                 isSaving ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -517,7 +525,7 @@ const StockUpdatePage = () => {
             type="button"
             onClick={handleSubmit}
             disabled={isSaving}
-            className={`flex items-center px-6 py-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+            className={`flex items-center px-6 py-3 bg-blue-600 cursor-pointer text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
               isSaving ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >

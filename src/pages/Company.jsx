@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CompanyCard from "../components/CompanyCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import { deleteStock } from "../apiManager/stockApiManager";
+import { toast } from "react-toastify"; // Added missing import for toast notifications
+import { setStock } from "../store/slice/stockSlice";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
@@ -20,21 +22,28 @@ function Company() {
   const [companiesPerPage] = useState(9);
 
   const navigate = useNavigate();
-  const { stocks: companies } = useSelector((state) => state.stocks);
+  const dispatch = useDispatch()
 
+  const { stocks: companies } = useSelector((state) => state.stocks);
+  console.log("Redux state : ", companies);
+  
   const handleTickerSelect = (ticker) => {
     navigate(`/company/${ticker}`);
   };
 
   const filteredCompanies = companies.filter((company) => {
-    const matchesSector = company.sector
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    // Check if search term matches ticker, company name, or sector
+    const matchesSearch = searchTerm === "" || 
+      company.ticker?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.sector?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Check if market cap filter matches
     const matchesMarketCap = marketCapFilter
       ? getMarketCapCategory(company["Market Cap"]) === marketCapFilter
       : true;
 
-    return matchesSector && matchesMarketCap;
+    return matchesSearch && matchesMarketCap;
   });
 
   // Calculate pagination
@@ -45,6 +54,7 @@ function Company() {
     indexOfLastCompany
   );
   const totalPages = Math.ceil(filteredCompanies.length / companiesPerPage);
+  
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -54,8 +64,10 @@ function Company() {
 
   const handleDelete = async (ticker) => {
     const response = await deleteStock(ticker);
+    console.log("delete response : ", response)
     if (response.success) {
       toast("Stock Delete Successfully");
+      dispatch(setStock(response.updatedData))
     } else {
       toast("Failed to Delete!!");
     }
@@ -63,7 +75,7 @@ function Company() {
 
   const handleEdit = (ticker) => {
     console.log("TICKER : ", ticker);
-    navigate("/admin_mutual_funds/update", { state: { ticker } });
+    navigate("/admin_stock/update", { state: { ticker } });
   };
 
   // Reset to first page when filters change
@@ -94,10 +106,10 @@ function Company() {
         <div className="mb-6 flex flex-row flex-wrap gap-4">
           <input
             type="text"
-            placeholder="Search by sector"
+            placeholder="Search by ticker, name, or sector"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-2 border border-gray-300 rounded-md w-64"
           />
           <select
             value={marketCapFilter}

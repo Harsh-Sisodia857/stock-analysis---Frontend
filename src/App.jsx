@@ -11,8 +11,6 @@ import Stocks from "./pages/Stocks";
 import Company from "./pages/Company";
 import WebFont from "webfontloader";
 import { useEffect } from "react";
-import { loadStocksThunk } from "./store/slice/stockSlice";
-import { getStocks } from "./indexedDB";
 import { useDispatch } from "react-redux";
 import NotFound from "./components/NotFound";
 import MutualFundAdminForm from "./pages/admin/CreateMutualFund";
@@ -22,6 +20,8 @@ import StockUpdatePage from "./pages/admin/UpdateStock";
 import AdminRoute from "./components/AdminRoutes";
 import AuthRedirect from "./components/AuthRedirect";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import { getStocks } from "./apiManager/stockApiManager";
+import { setStock } from "./store/slice/stockSlice";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,11 +37,11 @@ function App() {
   useEffect(() => {
     const fetchStocks = async () => {
       const stocks = await getStocks();
-      dispatch(loadStocksThunk(stocks));
+      dispatch(setStock(stocks))
     };
 
     fetchStocks();
-  }, [dispatch]);
+  }, []);
 
   return (
     <>
@@ -62,7 +62,7 @@ function App() {
           <Route path="/admin_stock/new" element={<AdminRoute><StockAdminPage/></AdminRoute>} />
           <Route path="/admin_stock/update" element={<AdminRoute><StockUpdatePage/></AdminRoute>} />
           
-          {/* <Route path='*' element={<NotFound/>} /> */}
+          <Route path='*' element={<NotFound/>} />
         </Routes>
       </div>
     </>

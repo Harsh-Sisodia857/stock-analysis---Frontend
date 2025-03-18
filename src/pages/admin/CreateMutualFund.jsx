@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Check, Info } from "lucide-react";
 import { createMutualFund } from "../../apiManager/stockApiManager";
+import { useNavigate } from "react-router-dom";
 
 const MutualFundAdminForm = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const MutualFundAdminForm = () => {
 
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
-
+  const navigate = useNavigate()
   const validateForm = () => {
     const newErrors = {};
 
@@ -80,12 +81,17 @@ const MutualFundAdminForm = () => {
         if (success) {
           console.log("Submitted data:", formData);
           setSubmitStatus("success");
+          toast("Mutual Fund Created Successfully")
         } else {
           setSubmitStatus("error");
+          toast.error("Failed to create Mutual Fund")
         }
       } catch (error) {
         console.error("Submission failed:", error);
         setSubmitStatus("error");
+        toast.error("Failed to create Mutual Fund")
+      }finally{
+        navigate("/")
       }
 
       setTimeout(() => {

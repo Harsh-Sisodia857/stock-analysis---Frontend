@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Download,
 } from "lucide-react";
+import { handleDownloadMutualFund, handleDownloadStock } from "../apiManager/stockApiManager";
 
 function Navbar() {
   const { user } = useSelector((state) => state.user);
@@ -135,8 +136,8 @@ function Navbar() {
                         </a>
 
                         <a
-                          href="/admin_stock/import"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
+                          onClick={handleDownloadStock}
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition cursor-pointer"
                         >
                           <Download className="mr-3 h-4 w-4 text-purple-600" />
                           <span>Import Stock Data</span>
@@ -193,8 +194,8 @@ function Navbar() {
                           <span>Add New Mutual Fund</span>
                         </a>
                         <a
-                          href="/admin_mutual_funds/analytics"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition"
+                          onClick={handleDownloadMutualFund}
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition cursor-pointer"
                         >
                           <Download className="mr-3 h-4 w-4 text-purple-600" />
                           <span>Import Fund Analytics</span>
@@ -292,7 +293,7 @@ function Navbar() {
                     <span>Add New Stock</span>
                   </a>
                   <a
-                    href="/admin_stock/import"
+                    onClick={handleDownloadStock}
                     className="flex items-center text-white hover:text-blue-300 cursor-pointer transition py-2"
                   >
                     <Download className="mr-2 h-4 w-4" />
@@ -320,8 +321,8 @@ function Navbar() {
                     <span>Add New Fund</span>
                   </a>
                   <a
-                    href="/admin_mutual_funds/analytics"
-                    className="flex items-center text-white hover:text-blue-300 transition py-2"
+                    onClick={handleDownloadMutualFund}
+                    className="flex items-center text-white hover:text-blue-300 transition py-2 cursor-pointer"
                   >
                     <Download className="mr-3 h-4 w-4 text-purple-600" />
                     <span>Import Fund Analytics</span>

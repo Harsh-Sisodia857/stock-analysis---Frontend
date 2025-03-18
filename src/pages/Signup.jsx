@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import signup from "../assets/signup-bg.jpg";  
 import { toast } from 'react-toastify';
-import { getStocks } from "../apiManager/stockApiManager";
 
 
 const SignUp = () => {
@@ -51,7 +50,6 @@ const SignUp = () => {
       localStorage.setItem('token', json.authToken);
       dispatch(setUser(json.userData));
       toast("Logged In Successfull");
-      getStocks(dispatch)
       navigate('/');
     } else {
       toast.error('Enter Valid Credentials');

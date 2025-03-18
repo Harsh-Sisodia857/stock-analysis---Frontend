@@ -1,34 +1,32 @@
-import { saveStocksThunk, setStock } from "../store/slice/stockSlice";
+import { toast } from "react-toastify";
 
-export const getStocks = () => {
-  return async (dispatch) => {
-    // Accept dispatch as an argument
-    try {
-      const appUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(appUrl + "/stock/all", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("token"),
-        },
-      });
-      const json = await response.json();
-      const stockData =
-        typeof json.stockData === "string"
-          ? JSON.parse(json.stockData)
-          : json.stockData;
-      console.log("Stock data : ", stockData);
-      dispatch(saveStocksThunk(stockData));
-    } catch (error) {
-      console.error("Error fetching stocks:", error);
-    }
-  };
-};
-
-export const fetchStock = async () => {
+export const getStocks = async () => {
   try {
     const appUrl = import.meta.env.VITE_API_URL;
-    const response = await fetch(appUrl + "/stock/", {
+    const response = await fetch(appUrl + "/stock/all", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+    const json = await response.json();
+    const stockData =
+      typeof json.stockData === "string"
+        ? JSON.parse(json.stockData)
+        : json.stockData;
+    console.log("Stock data received : ", stockData);
+    return stockData;
+  } catch (error) {
+    console.error("Error fetching stocks:", error);
+  }
+};
+
+export const fetchStock = async (ticker) => {
+  try {
+    const appUrl = import.meta.env.VITE_API_URL;
+    console.log("TICKER : ", ticker);
+    const response = await fetch(appUrl + "/stock/?ticker=" + ticker, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +37,7 @@ export const fetchStock = async () => {
     if (json.success) {
       const stockData =
         typeof json.stock === "string" ? JSON.parse(json.stock) : json.stock;
-      console.log("Stock data : ", stock);
+      console.log("Stock data : ", stockData);
       return stockData;
     }
     return null;
@@ -60,7 +58,7 @@ export const createStock = async (stock) => {
       body: JSON.stringify(stock),
     });
     const json = await response.json();
-    
+
     return json;
   } catch (error) {
     console.error("Error fetching stocks:", error);
@@ -69,7 +67,7 @@ export const createStock = async (stock) => {
 
 export const deleteStock = async (ticker) => {
   const appUrl = import.meta.env.VITE_API_URL;
-  const response = await fetch(appUrl + "/mutual_funds/delete/" + ticker, {
+  const response = await fetch(appUrl + "/stock/delete/" + ticker, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -78,13 +76,12 @@ export const deleteStock = async (ticker) => {
   });
 
   const json = await response.json();
-
   return json;
 };
 
 export const updateStock = async (ticker, formData) => {
   const appUrl = import.meta.env.VITE_API_URL;
-  const response = await fetch(appUrl + "/mutual_funds/update/" + ticker, {
+  const response = await fetch(appUrl + "/stock/update/" + ticker, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -97,6 +94,37 @@ export const updateStock = async (ticker, formData) => {
 
   return json;
 };
+
+const downloadFile = async (endpoint, filename) => {
+  try {
+    const appUrl = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${appUrl}/${endpoint}/download`, {
+      method: "GET",
+      headers: {
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error(`Error downloading ${filename}:`, error);
+    toast.error(`Failed to download ${filename}. Please try again.`);
+  }
+};
+
+export const handleDownloadStock = () => downloadFile("stock", "stock.json");
+export const handleDownloadMutualFund = () => downloadFile("mutual_funds", "mutual_fund.json");
+
 
 export const fetchMutualFund = async (schemeName) => {
   const appUrl = import.meta.env.VITE_API_URL;

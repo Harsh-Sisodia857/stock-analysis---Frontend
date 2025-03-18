@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import loginBg from "../assets/login-bgm.jpg";
 import { toast } from "react-toastify";
-import { getStocks } from "../apiManager/stockApiManager";
 
 export default function Login() {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -43,7 +42,6 @@ export default function Login() {
       dispatch(setUser(json.userData));
       toast("Logged In Successfully");
       navigate("/");
-      dispatch(getStocks()); // Correctly dispatch getStocks
     } else {
       toast.error("Enter Valid Credentials");
     }

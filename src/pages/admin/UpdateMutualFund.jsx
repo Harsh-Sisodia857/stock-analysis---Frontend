@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Check, Info, AlertCircle, Loader } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Check, Info, AlertCircle } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   fetchMutualFund,
   updateMutualFund,
 } from "../../apiManager/stockApiManager";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loading";
 
 const UpdateMutualFundPage = () => {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ const UpdateMutualFundPage = () => {
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
   const location = useLocation();
-
+  const navigate = useNavigate()
   // Get scheme_name from URL query parameters
   const getSchemeNameFromURL = () => {
     const schemeName = location.state?.schemeName || "";
@@ -117,12 +118,12 @@ const UpdateMutualFundPage = () => {
     if (validateForm()) {
       setSubmitStatus("submitting");
 
-      // Simulate API call
       const response = await updateMutualFund(schemeName, formData);
       if(response.success){
         console.log("Updated data:", formData);
         setSubmitStatus("success");
-        toast("Details Updated Successfully")
+        toast("Details Updated Successfully");
+        navigate("/")
       }else{
         toast("Failed to Update")
       }
@@ -174,10 +175,7 @@ const UpdateMutualFundPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <Loader className="h-8 w-8 text-indigo-600 animate-spin mb-4" />
-        <p className="text-gray-600">Loading fund details...</p>
-      </div>
+      <Loading message={"Loading fund details"}/>
     );
   }
 

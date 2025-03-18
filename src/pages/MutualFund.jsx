@@ -32,7 +32,7 @@ const MutualFundsPage = () => {
   const [expandedFund, setExpandedFund] = useState(null);
 
   let role = user?.role || "";
-  console.log("ROLE: ",role)
+  console.log("ROLE: ", role);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchMutualFunds = async () => {
@@ -56,6 +56,7 @@ const MutualFundsPage = () => {
     console.log("RESPONSE DELTE : ", response);
     if (response.success) {
       toast(`Mutual Fund with ${schemeName} has been deleted successfully`);
+      navigate("/");
     } else {
       toast.error(`Failed to delete Mutual Fund with ${schemeName}`);
     }
@@ -379,7 +380,10 @@ const MutualFundsPage = () => {
                     <div className="ml-2">
                       <button
                         className="cursor-pointer"
-                        onClick={() => handleDelete(fund.scheme_name)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(fund.scheme_name);
+                        }}
                       >
                         <Trash2 />
                       </button>
@@ -387,7 +391,10 @@ const MutualFundsPage = () => {
                     <div className="ml-2">
                       <button
                         className="cursor-pointer"
-                        onClick={() => handleEdit(fund.scheme_name)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(fund.scheme_name);
+                        }}
                       >
                         <FilePenLine />
                       </button>
