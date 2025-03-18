@@ -25,10 +25,10 @@ export const getStocks = () => {
   };
 };
 
-export const fetchStock = async (ticker) => {
+export const fetchStock = async () => {
   try {
     const appUrl = import.meta.env.VITE_API_URL;
-    const response = await fetch(appUrl + "/stock/" + ticker, {
+    const response = await fetch(appUrl + "/stock/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

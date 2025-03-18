@@ -51,9 +51,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mutual_funds" element={<ProtectedRoute><MutualFund /></ProtectedRoute>} />
           <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
           <Route path="/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
+          <Route path="/mutual_funds" element={<ProtectedRoute><MutualFund /></ProtectedRoute>} />
           <Route path="/company" element={<ProtectedRoute><Company /></ProtectedRoute>} />
           <Route path="/company/:ticker" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
           {/* admin Routes  */}
@@ -62,7 +62,7 @@ function App() {
           <Route path="/admin_stock/new" element={<AdminRoute><StockAdminPage/></AdminRoute>} />
           <Route path="/admin_stock/update" element={<AdminRoute><StockUpdatePage/></AdminRoute>} />
           
-          <Route path='*' element={<NotFound/>} />
+          {/* <Route path='*' element={<NotFound/>} /> */}
         </Routes>
       </div>
     </>

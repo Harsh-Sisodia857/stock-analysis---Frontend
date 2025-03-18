@@ -89,12 +89,10 @@ const StockUpdatePage = () => {
     "Div. Yield(%)": "",
     "PB Ratio": 0,
   });
-  const location = useLocation();
-  const ticker = location.state?.ticker || "";
   useEffect(() => {
     const fetchStockData = async () => {
       try {
-        await fetchStock(ticker);
+        await fetchStock();
         setStock(stockData);
         setIsLoading(false)
       } catch (error) {
