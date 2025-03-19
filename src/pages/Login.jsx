@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 export default function Login() {
   const appUrl = import.meta.env.VITE_API_URL;
-  console.log("URL : ",appUrl)
+  console.log("URL : ", appUrl);
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,12 +19,12 @@ export default function Login() {
       toast.error("Email is required");
       return;
     }
-  
+
     if (!credentials.password) {
       toast.error("Password is required");
       return;
     }
-  
+
     const response = await fetch(appUrl + "/user/login", {
       method: "POST",
       headers: {
@@ -46,68 +46,47 @@ export default function Login() {
       toast.error("Enter Valid Credentials");
     }
   };
-  
+
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="h-[100vh]">
-      <div
-        style={{
-          backgroundImage: `url(${loginBg})`,
-          height: "100%",
-          backgroundSize: "cover",
-          position: "relative",
-          backgroundPosition: "center",
-        }}
-      >
-        <div
-          className="h-[100%]"
-          style={{ paddingTop: "100px", background: "rgba(0, 0, 0, 0.5)" }}
-        >
-          <form
-            className="w-[40%] h-auto m-auto mt-5 rounded p-4"
-            onSubmit={handleSubmit}
-          >
-            <h2 className="text-2xl font-bold text-center text-white">Login</h2>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label text-white">
-                Email address
-              </label>
-              <input
-                type="email"
-                className="w-full p-2 mt-1 border rounded-md text-white"
-                name="email"
-                value={credentials.email}
-                onChange={onChange}
-                aria-describedby="emailHelp"
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label text-white">
-                Password
-              </label>
-              <input
-                type="password"
-                className="w-full p-2 mt-1 border rounded-md text-white"
-                value={credentials.password}
-                onChange={onChange}
-                name="password"
-              />
-            </div>
-            <button
-              className="button-29"
-              style={{ marginRight: "20px" }}
-              type="submit"
-            >
-              Login
-            </button>
-            <Link className="button-29" to="/signup">
-              New User
-            </Link>
-          </form>
-        </div>
+    <div className="h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${loginBg})` }}>
+      <div className="bg-black bg-opacity-50 p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-white">Login</h2>
+        <form onSubmit={handleSubmit} className="mt-4">
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-white text-sm font-medium">Email address</label>
+            <input
+              id="email"
+              type="email"
+              className="w-full p-3 mt-1 border rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              name="email"
+              value={credentials.email}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-white text-sm font-medium">Password</label>
+            <input
+              id = "password"
+              type="password"
+              className="w-full p-3 mt-1 border rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={credentials.password}
+              onChange={onChange}
+              name="password"
+              required
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">Login</button>
+          </div>
+          <div className="text-center mt-4">
+            <Link to="/signup" className="text-blue-400 hover:underline">New User? Sign Up</Link>
+          </div>
+        </form>
       </div>
     </div>
   );

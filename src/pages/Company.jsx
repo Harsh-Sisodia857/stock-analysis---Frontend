@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import { deleteStock } from "../apiManager/stockApiManager";
-import { toast } from "react-toastify"; // Added missing import for toast notifications
+import { toast } from "react-toastify";
 import { setStock } from "../store/slice/stockSlice";
 
 // Function to categorize market caps
@@ -19,15 +19,34 @@ function Company() {
   const [searchTerm, setSearchTerm] = useState("");
   const [marketCapFilter, setMarketCapFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [companiesPerPage] = useState(9);
+  const [companiesPerPage, setCompaniesPerPage] = useState(9);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const { stocks: companies } = useSelector((state) => state.stocks);
   const { theme } = useSelector((state) => state.theme);
-  console.log("Redux state : ", companies);
   
+  // Responsive grid layout - adjust companies per page based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setCompaniesPerPage(6); // Show fewer cards on mobile
+      } else {
+        setCompaniesPerPage(9);
+      }
+    };
+
+    // Set initial value
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleTickerSelect = (ticker) => {
     navigate(`/company/${ticker}`);
   };
@@ -65,17 +84,15 @@ function Company() {
 
   const handleDelete = async (ticker) => {
     const response = await deleteStock(ticker);
-    console.log("delete response : ", response)
     if (response.success) {
       toast("Stock Delete Successfully");
-      dispatch(setStock(response.updatedData))
+      dispatch(setStock(response.updatedData));
     } else {
       toast("Failed to Delete!!");
     }
   };
 
   const handleEdit = (ticker) => {
-    console.log("TICKER : ", ticker);
     navigate("/admin_stock/update", { state: { ticker } });
   };
 
@@ -85,37 +102,37 @@ function Company() {
   }, [searchTerm, marketCapFilter]);
 
   return (
-    <div className={`${theme === "dark" ? "text-white bg-gray-900" : "text-gray-900"} p-6 min-h-screen `}>
-      <div className="flex items-center justify-between">
+    <div className={`${theme === "dark" ? "text-white bg-gray-900" : "text-gray-900"} p-3 sm:p-6 min-h-screen`}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="text-sm mb-4">
+          <div className="text-sm mb-2 sm:mb-4">
             <a
-              className="text-blue-600 hover:underline text-xl font-medium"
+              className="text-blue-600 hover:underline text-lg sm:text-xl font-medium"
               href="/"
             >
               Stock Analysis
             </a>
-            <span className="text-xl font-medium"> {">"} </span>
-            <a className="text-xl font-medium">Stock Directory</a>
+            <span className="text-lg sm:text-xl font-medium"> {">"} </span>
+            <a className="text-lg sm:text-xl font-medium">Stock Directory</a>
           </div>
-          <h1 className="text-2xl font-bold mb-4">
+          <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
             Stocks List of NSE and BSE Listed Companies
           </h1>
         </div>
 
         {/* Search Bar & Filter */}
-        <div className="mb-6 flex text-gray-900 bg-white rounded-md flex-row flex-wrap gap-4">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row text-gray-900 gap-2 sm:gap-4">
           <input
             type="text"
             placeholder="Search by ticker, name, or sector"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md w-64"
+            className="p-2 border border-gray-300 rounded-md w-full sm:w-64 bg-white"
           />
           <select
             value={marketCapFilter}
             onChange={(e) => setMarketCapFilter(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md px-2"
+            className="p-2 border border-gray-300 rounded-md px-2 bg-white"
           >
             <option value="">All Market Caps</option>
             <option value="Micro">Micro</option>
@@ -127,8 +144,8 @@ function Company() {
       </div>
 
       {/* Results summary */}
-      <div className="mb-4">
-        <p>
+      <div className="mb-3 sm:mb-4 px-1">
+        <p className="text-sm sm:text-base">
           Showing {filteredCompanies.length > 0 ? indexOfFirstCompany + 1 : 0}{" "}
           to {Math.min(indexOfLastCompany, filteredCompanies.length)} of{" "}
           {filteredCompanies.length} stocks
@@ -136,7 +153,7 @@ function Company() {
       </div>
 
       {/* Company Cards */}
-      <div className="mx-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {currentCompanies.length > 0 ? (
           currentCompanies.map((company, index) => (
             <CompanyCard
@@ -148,17 +165,21 @@ function Company() {
             />
           ))
         ) : (
-          <p className="text-gray-600">No companies match your search.</p>
+          <div className="col-span-full text-center py-6">
+            <p className="text-gray-600">No companies match your search.</p>
+          </div>
         )}
       </div>
 
       {/* Pagination */}
       {filteredCompanies.length > companiesPerPage && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
     </div>
   );

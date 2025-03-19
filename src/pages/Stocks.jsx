@@ -98,7 +98,7 @@ function Stocks() {
 
       <h1 className="font-bold text-3xl mb-4">{stock?.name}</h1>
 
-      <div className="grid grid-cols-2 gap-4 text-gray-700 mb-6">
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 text-gray-700 mb-6">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="font-semibold text-lg mb-2">Sector</h2>
           <p>{stock?.sector}</p>
@@ -139,10 +139,10 @@ function Stocks() {
         </div>
       </div>
 
-      <div className="flex items-stretch gap-4 h-full">
-        <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex-1">
+      <div className="flex md:flex-row flex-col items-stretch gap-4 h-full">
+        <div className="bg-white p-6 rounded-lg shadow-md md:w-1/2 flex-1">
           <h2 className="font-semibold text-xl mb-4 text-gray-900">Company Essentials</h2>
-          <div className="grid grid-cols-3 gap-6 text-gray-700 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-gray-700 text-center">
             <div>
               <p className="font-semibold">
                 Market Cap <InfoButton text={tooltips.marketCap} />
@@ -253,7 +253,7 @@ function Stocks() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex flex-1 items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md md:w-1/2 flex flex-1 items-center justify-center">
           <PieChart
             MutualFundsHolding={stock["MF Holding(%)"]}
             FIIHolding={stock["FII Holding(%)"]}

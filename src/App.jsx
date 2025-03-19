@@ -70,7 +70,7 @@ function App() {
     >
       <Navbar theme={theme} handleTheme={handleTheme} />
 
-      <div className={`${theme === "dark" ? "text-white" : "text-gray-900"} pt-6`}>
+      <div className={`${theme === "dark" ? "text-white" : "text-gray-900"}`}>
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Home />} />
