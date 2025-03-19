@@ -4,8 +4,9 @@ import { Save, ArrowLeft, RefreshCw } from "lucide-react";
 import { fetchStock, updateStock } from "../../apiManager/stockApiManager";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setStock } from "../../store/slice/stockSlice";
+import Loading from "../../components/Loading";
 
 const InputField = ({
   label,
@@ -55,7 +56,7 @@ const StockUpdatePage = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  
+  const {theme} = useSelector((state) => state.theme)
   const ticker = location.state?.ticker || "";
   const [stock, setStockData] = useState({
     name: "",
@@ -157,14 +158,14 @@ const StockUpdatePage = () => {
     }
   };
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <Loading message={"Loading stock detail"}/>
     );
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className=" min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
@@ -174,9 +175,9 @@ const StockUpdatePage = () => {
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Update Stock</h1>
-              <p className="text-gray-600">
+            <div className={`${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+              <h1 className={`text-2xl font-bold  `}>Update Stock</h1>
+              <p>
                 {stock.ticker} - {stock.name}
               </p>
             </div>
@@ -185,7 +186,7 @@ const StockUpdatePage = () => {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 mr-2 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              className="px-4 py-2 bg-blue-600 cursor-pointer rounded-md text-white mr-2   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             >
               Reset
             </button>

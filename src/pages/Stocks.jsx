@@ -3,14 +3,15 @@ import InfoButton from "../components/InfoButton";
 import { PieChart } from "../components/PieChart";
 import { redirect, useParams } from "react-router-dom";
 import NotFound from "../components/NotFound";
+import { useSelector } from "react-redux";
 
 function Stocks() {
   const appUrl = import.meta.env.VITE_API_URL;
   const { ticker } = useParams();
   console.log("Company Ticker: ", ticker);
   const [stock, setStock] = useState(null);
-  const [loading, setLoading] = useState(true); // State for loading
-
+  const [loading, setLoading] = useState(true); 
+  const {theme} = useSelector((state) => state.theme);
   const getStockDetail = async (ticker) => {
     console.log("Fetching stock details for ticker:", ticker);
     setLoading(true); // Set loading to true before fetching
@@ -74,7 +75,7 @@ function Stocks() {
 
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className={`${theme === "dark" ? "text-white bg-gray-900" : "text-gray-900"} p-6 bg-gray-50 min-h-screen`}>
       <div className="text-sm text-gray-600 mb-4">
         <a
           className="text-blue-600 hover:underline text-xl font-medium"
@@ -95,7 +96,7 @@ function Stocks() {
         </a>
       </div>
 
-      <h1 className="font-bold text-3xl text-gray-900 mb-4">{stock?.name}</h1>
+      <h1 className="font-bold text-3xl mb-4">{stock?.name}</h1>
 
       <div className="grid grid-cols-2 gap-4 text-gray-700 mb-6">
         <div className="bg-white p-4 rounded-lg shadow-md">
@@ -115,23 +116,23 @@ function Stocks() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="font-semibold text-xl mb-4">Price Summary</h2>
+        <h2 className="font-semibold text-xl mb-4 text-gray-900">Price Summary</h2>
         <div className="grid grid-cols-3 text-center">
           <div>
             <p className="text-gray-500">CURRENT PRICE</p>
-            <p className="font-semibold text-lg">
+            <p className="font-semibold text-lg text-gray-900">
               ₹{formatNumber(stock["Close Price"])}
             </p>
           </div>
           <div>
             <p className="text-gray-500">52 WEEK HIGH</p>
-            <p className="font-semibold text-lg">
+            <p className="font-semibold text-lg text-gray-900">
               ₹{formatNumber(stock["Close Price"] * 1.1)}
             </p>
           </div>
           <div>
             <p className="text-gray-500">52 WEEK LOW</p>
-            <p className="font-semibold text-lg">
+            <p className="font-semibold text-lg text-gray-900">
               ₹{formatNumber(stock["Close Price"] * 0.9)}
             </p>
           </div>
@@ -140,7 +141,7 @@ function Stocks() {
 
       <div className="flex items-stretch gap-4 h-full">
         <div className="bg-white p-6 rounded-lg shadow-md w-1/2 flex-1">
-          <h2 className="font-semibold text-xl mb-4">Company Essentials</h2>
+          <h2 className="font-semibold text-xl mb-4 text-gray-900">Company Essentials</h2>
           <div className="grid grid-cols-3 gap-6 text-gray-700 text-center">
             <div>
               <p className="font-semibold">

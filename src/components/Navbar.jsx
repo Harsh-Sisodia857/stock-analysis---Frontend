@@ -2,21 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import logo from "../assets/Stock Analysis.png";
+import { Menu, X, Plus, List, Moon, Sun, Download } from "lucide-react";
 import {
-  Menu,
-  X,
-  Plus,
-  List,
-  BarChart3,
-  TrendingUp,
-  Download,
-} from "lucide-react";
-import { handleDownloadMutualFund, handleDownloadStock } from "../apiManager/stockApiManager";
+  handleDownloadMutualFund,
+  handleDownloadStock,
+} from "../apiManager/stockApiManager";
 
-function Navbar() {
+function Navbar({ theme, handleTheme }) {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false); // State for mobile menu
+  const [isOpen, setIsOpen] = useState(false);
   const [mutualFundsMenuOpen, setMutualFundsMenuOpen] = useState(false);
   const [stocksMenuOpen, setStocksMenuOpen] = useState(false);
   const mutualFundsRef = useRef(null);
@@ -47,7 +42,6 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
   return (
     <nav className="bg-blue-600 shadow-md sticky top-0 left-0 w-full z-50">
       <div className="max-w-6xl mx-auto px-4">
@@ -230,6 +224,13 @@ function Navbar() {
                 </a>
               </>
             )}
+
+            <button
+              onClick={handleTheme}
+              className="text-white dark:text-gray-200 hover:text-blue-300 transition cursor-pointer"
+            >
+              {theme === "light" ? <Moon size={24} /> : <Sun size={24} />}
+            </button>
           </div>
 
           {/* Mobile Menu Button */}

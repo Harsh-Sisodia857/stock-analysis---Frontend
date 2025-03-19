@@ -10,8 +10,8 @@ import { ToastContainer } from "react-toastify";
 import Stocks from "./pages/Stocks";
 import Company from "./pages/Company";
 import WebFont from "webfontloader";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import NotFound from "./components/NotFound";
 import MutualFundAdminForm from "./pages/admin/CreateMutualFund";
 import UpdateMutualFundPage from "./pages/admin/UpdateMutualFund";
@@ -22,9 +22,16 @@ import AuthRedirect from "./components/AuthRedirect";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import { getStocks } from "./apiManager/stockApiManager";
 import { setStock } from "./store/slice/stockSlice";
+import { toggleTheme } from "./store/slice/themeSlice";
 
 function App() {
+  const theme = useSelector((state) => state.theme.theme);
   const dispatch = useDispatch();
+  
+  const handleTheme = () => {
+    dispatch(toggleTheme());
+  };
+  
   useEffect(() => {
     WebFont.load({
       google: {
@@ -37,35 +44,115 @@ function App() {
   useEffect(() => {
     const fetchStocks = async () => {
       const stocks = await getStocks();
-      dispatch(setStock(stocks))
+      dispatch(setStock(stocks));
     };
 
     fetchStocks();
   }, []);
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setTheme(localStorage.getItem("theme") || "light");
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
-    <>
-      <Navbar />
-      <div className="pt-6">
+    <div
+      className={`${
+        theme === "dark" ? "bg-gray-900 text-gray-200" : "bg-white text-black"
+      }`}
+    >
+      <Navbar theme={theme} handleTheme={handleTheme} />
+
+      <div className={`${theme === "dark" ? "text-white" : "text-gray-900"} pt-6`}>
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
-          <Route path="/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
-          <Route path="/mutual_funds" element={<ProtectedRoute><MutualFund /></ProtectedRoute>} />
-          <Route path="/company" element={<ProtectedRoute><Company /></ProtectedRoute>} />
-          <Route path="/company/:ticker" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
+          <Route
+            path="/login"
+            element={
+              <AuthRedirect>
+                <Login />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <AuthRedirect>
+                <SignUp />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/mutual_funds"
+            element={
+              <ProtectedRoute>
+                <MutualFund />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company"
+            element={
+              <ProtectedRoute>
+                <Company />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company/:ticker"
+            element={
+              <ProtectedRoute>
+                <Stocks />
+              </ProtectedRoute>
+            }
+          />
           {/* admin Routes  */}
-          <Route path="/admin_mutual_funds/new" element={<AdminRoute><MutualFundAdminForm /></AdminRoute>} />
-          <Route path="/admin_mutual_funds/update" element={<AdminRoute><UpdateMutualFundPage /></AdminRoute>} />
-          <Route path="/admin_stock/new" element={<AdminRoute><StockAdminPage/></AdminRoute>} />
-          <Route path="/admin_stock/update" element={<AdminRoute><StockUpdatePage/></AdminRoute>} />
-          
-          <Route path='*' element={<NotFound/>} />
+          <Route
+            path="/admin_mutual_funds/new"
+            element={
+              <AdminRoute>
+                <MutualFundAdminForm />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin_mutual_funds/update"
+            element={
+              <AdminRoute>
+                <UpdateMutualFundPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin_stock/new"
+            element={
+              <AdminRoute>
+                <StockAdminPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin_stock/update"
+            element={
+              <AdminRoute>
+                <StockUpdatePage />
+              </AdminRoute>
+            }
+          />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -25,6 +25,7 @@ function Company() {
   const dispatch = useDispatch()
 
   const { stocks: companies } = useSelector((state) => state.stocks);
+  const { theme } = useSelector((state) => state.theme);
   console.log("Redux state : ", companies);
   
   const handleTickerSelect = (ticker) => {
@@ -84,10 +85,10 @@ function Company() {
   }, [searchTerm, marketCapFilter]);
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
-      <div className="flex items-center justify-around">
+    <div className={`${theme === "dark" ? "text-white bg-gray-900" : "text-gray-900"} p-6 min-h-screen `}>
+      <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm text-gray-600 mb-4">
+          <div className="text-sm mb-4">
             <a
               className="text-blue-600 hover:underline text-xl font-medium"
               href="/"
@@ -95,15 +96,15 @@ function Company() {
               Stock Analysis
             </a>
             <span className="text-xl font-medium"> {">"} </span>
-            <a className="text-black text-xl font-medium">Stock Directory</a>
+            <a className="text-xl font-medium">Stock Directory</a>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl font-bold mb-4">
             Stocks List of NSE and BSE Listed Companies
           </h1>
         </div>
 
         {/* Search Bar & Filter */}
-        <div className="mb-6 flex flex-row flex-wrap gap-4">
+        <div className="mb-6 flex text-gray-900 bg-white rounded-md flex-row flex-wrap gap-4">
           <input
             type="text"
             placeholder="Search by ticker, name, or sector"
@@ -114,7 +115,7 @@ function Company() {
           <select
             value={marketCapFilter}
             onChange={(e) => setMarketCapFilter(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md px-2 mx-1"
+            className="p-2 border border-gray-300 rounded-md px-2"
           >
             <option value="">All Market Caps</option>
             <option value="Micro">Micro</option>
@@ -126,7 +127,7 @@ function Company() {
       </div>
 
       {/* Results summary */}
-      <div className="mb-4 text-gray-600">
+      <div className="mb-4">
         <p>
           Showing {filteredCompanies.length > 0 ? indexOfFirstCompany + 1 : 0}{" "}
           to {Math.min(indexOfLastCompany, filteredCompanies.length)} of{" "}

@@ -1,6 +1,10 @@
+import { useSelector } from "react-redux";
+
 const AboutUs = () => {
+  const {theme} = useSelector((state) => state.theme)
   return (
-      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <div   className={`${theme === "dark" ? "text-slate-700" : ""} max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg`}
+>
           <h1 className="text-3xl font-bold mb-4 text-center">About Us</h1>
           <p className="mb-4 text-gray-700">
               Welcome to our Stock Analysis Hub!

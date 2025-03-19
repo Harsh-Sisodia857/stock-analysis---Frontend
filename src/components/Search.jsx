@@ -13,6 +13,7 @@ function Search() {
   
   const navigate = useNavigate(); 
   const { stocks: stockData } = useSelector((state) => state.stocks);
+  const {theme} = useSelector((state) => state.theme)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -111,11 +112,13 @@ function Search() {
   };
 
   return (
-    <div>
+    <div  className={`${
+      theme === "dark" && "text-slate-700"
+    }`}>
       <div className="w-full max-w-sm min-w-[500px]">
         <div className="relative" ref={suggestionsRef}>
           <input
-            className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+            className={`${theme === "light" ? "text-slate-700" : "text-white"} w-full bg-transparent placeholder:text-slate-400 text-sm border border-slate-200 rounded-md pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow`}
             placeholder="Type a Company Name or Brand to Search"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

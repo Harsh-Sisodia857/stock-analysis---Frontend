@@ -47,7 +47,7 @@ function CompanyCard({ company, onSelectTicker, onDelete, onEdit }) {
           </p>
         </div>
         {role === "admin" && (
-          <div className="flex">
+          <div className="flex text-gray-900">
             <div className="ml-2">
               <button
                 className="cursor-pointer"

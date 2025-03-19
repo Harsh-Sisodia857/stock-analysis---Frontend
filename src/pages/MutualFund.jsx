@@ -26,6 +26,7 @@ const MutualFundsPage = () => {
     direction: "ascending",
   });
   const { user } = useSelector((state) => state.user);
+  const {theme} = useSelector((state) => state.theme);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedRating, setSelectedRating] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -179,26 +180,26 @@ const MutualFundsPage = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className={`${theme === "dark" ? "text-white" : "text-gray-900"}bg-gray-50 min-h-screen p-6`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className={`text-3xl font-bold `}>
             Mutual Funds Explorer
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="mt-2">
             Discover and compare the best mutual funds for your investment
             portfolio
           </p>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className={`text-gray-900 bg-white rounded-lg shadow-md p-6 mb-6`}>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+                <Search className="h-5 w-5 " />
               </div>
               <input
                 type="text"
@@ -300,7 +301,7 @@ const MutualFundsPage = () => {
         </div>
 
         {/* Results Count */}
-        <div className="mb-4 text-gray-600">
+        <div className="mb-4 ">
           Showing {filteredFunds.length > 0 ? indexOfFirstPage + 1 : 0} to{" "}
           {Math.min(indexOfLastPage, funds.length)} of {funds.length} funds
         </div>
@@ -310,7 +311,7 @@ const MutualFundsPage = () => {
           {currentMutualFunds.map((fund, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className="bg-white text-gray-900 rounded-lg shadow-md overflow-hidden"
             >
               {/* Fund Summary Row */}
               <div
@@ -318,10 +319,10 @@ const MutualFundsPage = () => {
                 onClick={() => toggleExpandFund(index)}
               >
                 <div className="w-full md:w-1/2 mb-2 md:mb-0">
-                  <h3 className="font-bold text-lg text-gray-900">
+                  <h3 className="font-bold text-lg">
                     {fund.scheme_name}
                   </h3>
-                  <p className="text-gray-500 text-sm">{fund.amc_name}</p>
+                  <p className="text-sm">{fund.amc_name}</p>
                   <div className="flex items-center mt-1">
                     <span className="text-sm mr-2">
                       {fund.category} | {fund.sub_category}

@@ -113,7 +113,6 @@ const downloadFile = async (endpoint, filename) => {
     link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
-    
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
   } catch (error) {
@@ -122,9 +121,15 @@ const downloadFile = async (endpoint, filename) => {
   }
 };
 
-export const handleDownloadStock = () => downloadFile("stock", "stock.json");
-export const handleDownloadMutualFund = () => downloadFile("mutual_funds", "mutual_fund.json");
+export const handleDownloadStock = async() => {
+  await downloadFile("stock", "stock.json");
+  toast("Stock File is Downloaded");
+};
 
+export const handleDownloadMutualFund = async() => {
+  await downloadFile("mutual_funds", "mutual_fund.json");
+  toast("Mutual Fund File is Downloaded");
+};
 
 export const fetchMutualFund = async (schemeName) => {
   const appUrl = import.meta.env.VITE_API_URL;
