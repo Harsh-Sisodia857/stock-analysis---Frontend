@@ -94,7 +94,6 @@ export const updateStock = async (ticker, formData) => {
 
   return json;
 };
-
 const downloadFile = async (endpoint, filename) => {
   try {
     const appUrl = import.meta.env.VITE_API_URL;
@@ -105,14 +104,33 @@ const downloadFile = async (endpoint, filename) => {
       },
     });
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+    // ✅ Ensure the request was successful
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Download failed. Server response:", errorText);
+      toast.error(`Failed to download file: ${errorText}`);
+      return;
+    }
 
+    // ✅ Read response as a blob
+    const blob = await response.blob();
+    console.log("Blob type:", blob.type); // Debugging
+
+    // ✅ Explicitly set the file type to CSV
+    const csvBlob = new Blob([blob], { type: "text/csv" });
+    const url = window.URL.createObjectURL(csvBlob);
+
+    // ✅ Create a link and trigger the download
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", filename);
+    link.setAttribute(
+      "download",
+      filename.endsWith(".csv") ? filename : `${filename}.csv`
+    );
     document.body.appendChild(link);
     link.click();
+
+    // ✅ Cleanup
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
   } catch (error) {
@@ -121,12 +139,12 @@ const downloadFile = async (endpoint, filename) => {
   }
 };
 
-export const handleDownloadStock = async() => {
+export const handleDownloadStock = async () => {
   await downloadFile("stock", "stock.json");
   toast("Stock File is Downloaded");
 };
 
-export const handleDownloadMutualFund = async() => {
+export const handleDownloadMutualFund = async () => {
   await downloadFile("mutual_funds", "mutual_fund.json");
   toast("Mutual Fund File is Downloaded");
 };
