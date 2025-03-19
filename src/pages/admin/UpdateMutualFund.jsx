@@ -37,7 +37,7 @@ const UpdateMutualFundPage = () => {
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // Get scheme_name from URL query parameters
   const getSchemeNameFromURL = () => {
     const schemeName = location.state?.schemeName || "";
@@ -119,13 +119,13 @@ const UpdateMutualFundPage = () => {
       setSubmitStatus("submitting");
 
       const response = await updateMutualFund(schemeName, formData);
-      if(response.success){
+      if (response.success) {
         console.log("Updated data:", formData);
         setSubmitStatus("success");
         toast("Details Updated Successfully");
-        navigate("/")
-      }else{
-        toast("Failed to Update")
+        navigate("/");
+      } else {
+        toast("Failed to Update");
       }
 
       setTimeout(() => {
@@ -174,9 +174,7 @@ const UpdateMutualFundPage = () => {
   };
 
   if (loading) {
-    return (
-      <Loading message={"Loading fund details"}/>
-    );
+    return <Loading message={"Loading fund details"} />;
   }
 
   if (fetchError) {
@@ -213,6 +211,11 @@ const UpdateMutualFundPage = () => {
         </div>
       )}
 
+      <style jsx>{`
+        input {
+          color: black;
+        }
+      `}</style>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Information */}

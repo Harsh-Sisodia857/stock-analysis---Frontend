@@ -14,6 +14,7 @@ import Pagination from "../components/Pagination";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const MutualFundsPage = () => {
   const [funds, setFunds] = useState([]);
@@ -53,6 +54,7 @@ const MutualFundsPage = () => {
 
   const handleDelete = async (schemeName) => {
     console.log("Delete " + schemeName);
+    setIsLoading(true)
     const response = await deleteMutualFund(schemeName);
     console.log("RESPONSE DELTE : ", response);
     if (response.success) {
@@ -61,6 +63,7 @@ const MutualFundsPage = () => {
     } else {
       toast.error(`Failed to delete Mutual Fund with ${schemeName}`);
     }
+    setIsLoading(false)
   };
 
   const handleEdit = (schemeName) => {
@@ -173,9 +176,7 @@ const MutualFundsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <Loading/>
     );
   }
 

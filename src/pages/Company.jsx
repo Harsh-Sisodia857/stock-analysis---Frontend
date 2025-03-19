@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination";
 import { deleteStock } from "../apiManager/stockApiManager";
 import { toast } from "react-toastify";
 import { setStock } from "../store/slice/stockSlice";
+import Loading from "../components/Loading";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
@@ -20,7 +21,7 @@ function Company() {
   const [marketCapFilter, setMarketCapFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [companiesPerPage, setCompaniesPerPage] = useState(9);
-
+  const [isLoading, setLoading] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -83,6 +84,7 @@ function Company() {
   };
 
   const handleDelete = async (ticker) => {
+    setLoading(true)
     const response = await deleteStock(ticker);
     if (response.success) {
       toast("Stock Delete Successfully");
@@ -90,6 +92,7 @@ function Company() {
     } else {
       toast("Failed to Delete!!");
     }
+    setLoading(false)
   };
 
   const handleEdit = (ticker) => {
@@ -101,6 +104,7 @@ function Company() {
     setCurrentPage(1);
   }, [searchTerm, marketCapFilter]);
 
+  if(isLoading) return <Loading message={"Deleting the selected stock"}/>
   return (
     <div className={`${theme === "dark" ? "text-white bg-gray-900" : "text-gray-900"} p-3 sm:p-6 min-h-screen`}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

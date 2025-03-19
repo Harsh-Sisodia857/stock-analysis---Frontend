@@ -6,7 +6,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Stocks from "./pages/Stocks";
 import Company from "./pages/Company";
 import WebFont from "webfontloader";
@@ -30,6 +30,7 @@ function App() {
   
   const handleTheme = () => {
     dispatch(toggleTheme());
+    toast.success(`Switched to ${theme === "light" ? "dark" : "light"} mode`);
   };
   
   useEffect(() => {
