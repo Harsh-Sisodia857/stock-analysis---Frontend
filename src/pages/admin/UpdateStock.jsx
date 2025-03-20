@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setStock } from "../../store/slice/stockSlice";
 import Loading from "../../components/Loading";
+import { setLoading } from "../../store/slice/loadingSlice";
 
 const InputField = ({
   label,
@@ -51,12 +52,12 @@ const FormSection = ({ title, children }) => {
 };
 
 const StockUpdatePage = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const {theme} = useSelector((state) => state.theme)
+  const {loading} = useSelector((state) => state.loading)
   const ticker = location.state?.ticker || "";
   const [stock, setStockData] = useState({
     name: "",
@@ -99,14 +100,15 @@ const StockUpdatePage = () => {
   });
   useEffect(() => {
     const fetchStockData = async () => {
+      dispatch(setLoading(true))
       try {
         let stockData = await fetchStock(ticker);
         console.log(stockData)
         setStockData(stockData);
-        setIsLoading(false)
       } catch (error) {
         console.error("Error fetching stock data:", error);
-        setIsLoading(false);
+      }finally{
+        dispatch(setloading(false));
       }
     };
     
@@ -158,7 +160,7 @@ const StockUpdatePage = () => {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <Loading message={"Loading stock detail"}/>
     );

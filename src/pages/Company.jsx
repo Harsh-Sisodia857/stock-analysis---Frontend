@@ -7,6 +7,7 @@ import { deleteStock } from "../apiManager/stockApiManager";
 import { toast } from "react-toastify";
 import { setStock } from "../store/slice/stockSlice";
 import Loading from "../components/Loading";
+import { setLoading } from "../store/slice/loadingSlice";
 
 // Function to categorize market caps
 const getMarketCapCategory = (marketCap) => {
@@ -21,11 +22,11 @@ function Company() {
   const [marketCapFilter, setMarketCapFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [companiesPerPage, setCompaniesPerPage] = useState(9);
-  const [isLoading, setLoading] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { stocks: companies } = useSelector((state) => state.stocks);
+  const { loading : isLoading } = useSelector((state) => state.loading);
   const { theme } = useSelector((state) => state.theme);
   
   // Responsive grid layout - adjust companies per page based on screen size
@@ -84,7 +85,7 @@ function Company() {
   };
 
   const handleDelete = async (ticker) => {
-    setLoading(true)
+    dispatch(setLoading(true))
     const response = await deleteStock(ticker);
     if (response.success) {
       toast("Stock Delete Successfully");
@@ -92,7 +93,7 @@ function Company() {
     } else {
       toast("Failed to Delete!!");
     }
-    setLoading(false)
+    dispatch(setLoading(false))
   };
 
   const handleEdit = (ticker) => {

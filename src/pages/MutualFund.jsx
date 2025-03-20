@@ -11,13 +11,17 @@ import {
   getMutualFunds,
 } from "../apiManager/stockApiManager";
 import Pagination from "../components/Pagination";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import { setLoading } from "../store/slice/loadingSlice";
+import InfoButton from "../components/InfoButton";
+import { mutualFundInfo } from "../utility/ultils";
+import { setMutualFund } from "../store/slice/mutualFundSlice";
+import DeleteConfirmationAlert from "../components/Alert";
 
 const MutualFundsPage = () => {
-  const [funds, setFunds] = useState([]);
   const [filteredFunds, setFilteredFunds] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,26 +30,29 @@ const MutualFundsPage = () => {
     key: "scheme_name",
     direction: "ascending",
   });
-  const { user } = useSelector((state) => state.user);
-  const {theme} = useSelector((state) => state.theme);
+  const [showAlert, setShowAlert] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedRating, setSelectedRating] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [expandedFund, setExpandedFund] = useState(null);
-
+  const { user } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
+  const { loading } = useSelector((state) => state.loading);
+  const { mutualFund: funds } = useSelector((state) => state.mutualFund);
+  const [selectedFund, setSelectedFund] = useState("")
   let role = user?.role || "";
-  console.log("ROLE: ", role);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchMutualFunds = async () => {
+      dispatch(setLoading(true));
       try {
         const mutualFunds = await getMutualFunds();
-        setFunds(mutualFunds);
+        dispatch(setMutualFund(mutualFunds));
         setFilteredFunds(mutualFunds);
       } catch (error) {
         console.error("Error fetching mutual funds:", error);
       } finally {
-        setIsLoading(false);
+        dispatch(setLoading(false));
       }
     };
 
@@ -53,22 +60,41 @@ const MutualFundsPage = () => {
   }, []);
 
   const handleDelete = async (schemeName) => {
-    console.log("Delete " + schemeName);
-    setIsLoading(true)
+    dispatch(setLoading(true));
     const response = await deleteMutualFund(schemeName);
-    console.log("RESPONSE DELTE : ", response);
+    console.log("RESPONSE DELETE : ", response);
     if (response.success) {
+      const updatedFunds = response.updatedData;
+      dispatch(setMutualFund(updatedFunds));
       toast(`Mutual Fund with ${schemeName} has been deleted successfully`);
-      navigate("/");
     } else {
       toast.error(`Failed to delete Mutual Fund with ${schemeName}`);
     }
-    setIsLoading(false)
+    dispatch(setLoading(false));
   };
 
   const handleEdit = (schemeName) => {
     console.log("Edit " + schemeName);
     navigate("/admin_mutual_funds/update", { state: { schemeName } });
+  };
+
+  const renderStars = (rating) => {
+    return (
+      <div className="flex">
+        {[...Array(5)].map((_, i) => (
+          <svg
+            key={i}
+            className={`w-4 h-4 ${
+              i < rating ? "text-yellow-400" : "text-gray-300"
+            }`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        ))}
+      </div>
+    );
   };
 
   // Get unique categories
@@ -80,11 +106,33 @@ const MutualFundsPage = () => {
 
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(
-        (fund) =>
-          fund.scheme_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fund.amc_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fund.fund_manager.toLowerCase().includes(searchTerm.toLowerCase())
+      const fieldsToSearch = [
+        'scheme_name',
+        'min_sip',
+        'min_lumpsum',
+        'expense_ratio',
+        'fund_size_cr',
+        'fund_age_yr',
+        'fund_manager',
+        'sortino',
+        'alpha',
+        'sd',
+        'beta',
+        'sharpe',
+        'risk_level',
+        'amc_name',
+        'rating',
+        'category',
+        'sub_category',
+        'returns_1yr',
+        'returns_3yr',
+        'returns_5yr'
+      ];
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      result = result.filter((fund) => 
+        fieldsToSearch.some(field => 
+          String(fund[field]).toLowerCase().includes(lowercasedSearchTerm)
+        )
       );
     }
 
@@ -110,7 +158,7 @@ const MutualFundsPage = () => {
         return 0;
       });
     }
-
+    handlePageChange(1);
     setFilteredFunds(result);
   }, [funds, searchTerm, sortConfig, selectedCategory, selectedRating]);
 
@@ -137,26 +185,6 @@ const MutualFundsPage = () => {
     return returns + "%";
   };
 
-  // Render stars for rating
-  const renderStars = (rating) => {
-    return (
-      <div className="flex">
-        {[...Array(5)].map((_, i) => (
-          <svg
-            key={i}
-            className={`w-4 h-4 ${
-              i < rating ? "text-yellow-400" : "text-gray-300"
-            }`}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
-      </div>
-    );
-  };
-
   const toggleExpandFund = (index) => {
     if (expandedFund === index) {
       setExpandedFund(null);
@@ -165,6 +193,11 @@ const MutualFundsPage = () => {
     }
   };
 
+  const handleDeleteClick = (fundName) => {
+    setShowAlert(true);
+    setSelectedFund(fundName);
+  }
+
   //This gives the index of the last mutual fund item on the current page.
   const indexOfLastPage = currentPage * mutualFundsPerPage;
   const indexOfFirstPage = indexOfLastPage - mutualFundsPerPage;
@@ -172,22 +205,22 @@ const MutualFundsPage = () => {
     indexOfFirstPage,
     indexOfLastPage
   );
+  
   const totalPages = Math.ceil(filteredFunds.length / mutualFundsPerPage);
 
-  if (isLoading) {
-    return (
-      <Loading/>
-    );
+  if (loading) {
+    return <Loading />;
   }
 
   return (
-    <div className={`${theme === "dark" ? "text-white" : "text-gray-900"}bg-gray-50 min-h-screen p-6`}>
+    <div
+      className={`${
+        theme === "dark" ? "text-white" : "text-gray-900"
+      }bg-gray-50 min-h-screen p-6`}
+    >
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className={`text-3xl font-bold `}>
-            Mutual Funds Explorer
-          </h1>
+          <h1 className={`text-3xl font-bold `}>Mutual Funds Explorer</h1>
           <p className="mt-2">
             Discover and compare the best mutual funds for your investment
             portfolio
@@ -205,7 +238,7 @@ const MutualFundsPage = () => {
               <input
                 type="text"
                 className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Search funds..."
+                placeholder="Search Mutual funds"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -314,15 +347,20 @@ const MutualFundsPage = () => {
               key={index}
               className="bg-white text-gray-900 rounded-lg shadow-md overflow-hidden"
             >
+              <DeleteConfirmationAlert
+                key={index}
+                isOpen={showAlert}
+                onClose={() => setShowAlert(false)}
+                onConfirm={handleDelete}
+                itemName={selectedFund}
+              />
               {/* Fund Summary Row */}
               <div
                 className="p-4 cursor-pointer hover:bg-gray-50 flex flex-wrap md:flex-nowrap justify-between items-center"
                 onClick={() => toggleExpandFund(index)}
               >
                 <div className="w-full md:w-1/2 mb-2 md:mb-0">
-                  <h3 className="font-bold text-lg">
-                    {fund.scheme_name}
-                  </h3>
+                  <h3 className="font-bold text-lg">{fund.scheme_name}</h3>
                   <p className="text-sm">{fund.amc_name}</p>
                   <div className="flex items-center mt-1">
                     <span className="text-sm mr-2">
@@ -384,7 +422,7 @@ const MutualFundsPage = () => {
                         className="cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(fund.scheme_name);
+                          handleDeleteClick(fund.scheme_name)
                         }}
                       >
                         <Trash2 />
@@ -424,35 +462,53 @@ const MutualFundsPage = () => {
                       </h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Minimum SIP</span>
+                          <span className="text-gray-600">
+                            Minimum SIP{" "}
+                            <InfoButton text={mutualFundInfo.min_sip} />
+                          </span>
                           <span className="font-medium">₹{fund.min_sip}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Minimum Lumpsum</span>
+                          <span className="text-gray-600">
+                            Minimum Lumpsum{" "}
+                            <InfoButton text={mutualFundInfo.min_lumpsum} />
+                          </span>
                           <span className="font-medium">
                             ₹{fund.min_lumpsum}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fund Size</span>
+                          <span className="text-gray-600">
+                            Fund Size{" "}
+                            <InfoButton text={mutualFundInfo.fund_size_cr} />
+                          </span>
                           <span className="font-medium">
                             ₹{fund.fund_size_cr} Cr
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fund Age</span>
+                          <span className="text-gray-600">
+                            Fund Age{" "}
+                            <InfoButton text={mutualFundInfo.fund_age_yr} />
+                          </span>
                           <span className="font-medium">
                             {fund.fund_age_yr} Years
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fund Manager</span>
+                          <span className="text-gray-600">
+                            Fund Manager{" "}
+                            <InfoButton text={mutualFundInfo.fund_manager} />
+                          </span>
                           <span className="font-medium">
                             {fund.fund_manager}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Expense Ratio</span>
+                          <span className="text-gray-600">
+                            Expense Ratio{" "}
+                            <InfoButton text={mutualFundInfo.expense_ratio} />
+                          </span>
                           <span className="font-medium">
                             {fund.expense_ratio}%
                           </span>
@@ -467,31 +523,45 @@ const MutualFundsPage = () => {
                       </h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Risk Level</span>
+                          <span className="text-gray-600">
+                            Risk Level{" "}
+                            <InfoButton text={mutualFundInfo.risk_level} />
+                          </span>
                           <span className="font-medium">
                             {getRiskLevelText(fund.risk_level)}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Alpha</span>
+                          <span className="text-gray-600">
+                            Alpha <InfoButton text={mutualFundInfo.alpha} />
+                          </span>
                           <span className="font-medium">{fund.alpha}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Beta</span>
+                          <span className="text-gray-600">
+                            Beta <InfoButton text={mutualFundInfo.beta} />
+                          </span>
                           <span className="font-medium">{fund.beta}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">
-                            Standard Deviation
+                            Standard Deviation{" "}
+                            <InfoButton text={mutualFundInfo.sd} />
                           </span>
                           <span className="font-medium">{fund.sd}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Sharpe Ratio</span>
+                          <span className="text-gray-600">
+                            Sharpe Ratio{" "}
+                            <InfoButton text={mutualFundInfo.sharpe} />
+                          </span>
                           <span className="font-medium">{fund.sharpe}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Sortino Ratio</span>
+                          <span className="text-gray-600">
+                            Sortino Ratio{" "}
+                            <InfoButton text={mutualFundInfo.sortino} />
+                          </span>
                           <span className="font-medium">{fund.sortino}</span>
                         </div>
                       </div>

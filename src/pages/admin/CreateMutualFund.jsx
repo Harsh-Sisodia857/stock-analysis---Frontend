@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Check, Info } from "lucide-react";
 import { createMutualFund } from "../../apiManager/stockApiManager";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {setErrors} from "../../store/slice/errorSlice"
+import { setMutualFund } from "../../store/slice/mutualFundSlice";
 
 const MutualFundAdminForm = () => {
   const [formData, setFormData] = useState({
@@ -27,9 +30,11 @@ const MutualFundAdminForm = () => {
     returns_5yr: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const {errors} = useSelector((state) => state.errors)
   const [submitStatus, setSubmitStatus] = useState(null);
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -66,8 +71,10 @@ const MutualFundAdminForm = () => {
         newErrors[field] = "Must be a number";
       }
     });
-
-    setErrors(newErrors);
+    if(formData["sd"] < 0){
+      newErrors["sd"] = "Standard Deviation can not be negative"
+    }
+    dispatch(setErrors(newErrors))
     return Object.keys(newErrors).length === 0;
   };
 
@@ -77,9 +84,11 @@ const MutualFundAdminForm = () => {
       setSubmitStatus("submitting");
 
       try {
-        let success = await createMutualFund(formData);
-        if (success) {
+        let response = await createMutualFund(formData);
+        if (response.success) {
           console.log("Submitted data:", formData);
+          let newMutualFunds = response.updatedData;
+          dispatch(setMutualFund(newMutualFunds))
           setSubmitStatus("success");
           toast("Mutual Fund Created Successfully")
         } else {
@@ -90,6 +99,8 @@ const MutualFundAdminForm = () => {
         console.error("Submission failed:", error);
         setSubmitStatus("error");
         toast.error("Failed to create Mutual Fund")
+      }finally{
+        navigate("/")
       }
 
       setTimeout(() => {
@@ -103,7 +114,7 @@ const MutualFundAdminForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
+      dispatch(setErrors((prev) => ({ ...prev, [name]: null })));
     }
   };
 

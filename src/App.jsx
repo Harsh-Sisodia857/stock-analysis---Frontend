@@ -45,6 +45,7 @@ function App() {
   useEffect(() => {
     const fetchStocks = async () => {
       const stocks = await getStocks();
+      console.log("Stocks ---> App.jsx ", stocks)
       dispatch(setStock(stocks));
     };
 

@@ -3,18 +3,22 @@ import InfoButton from "../components/InfoButton";
 import { PieChart } from "../components/PieChart";
 import { redirect, useParams } from "react-router-dom";
 import NotFound from "../components/NotFound";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../components/Loading";
+import { setLoading } from "../store/slice/loadingSlice";
 
 function Stocks() {
   const appUrl = import.meta.env.VITE_API_URL;
   const { ticker } = useParams();
   console.log("Company Ticker: ", ticker);
   const [stock, setStock] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const {loading} = useSelector((state) => state.loading) 
   const {theme} = useSelector((state) => state.theme);
+  const dispatch = useDispatch()
+
   const getStockDetail = async (ticker) => {
     console.log("Fetching stock details for ticker:", ticker);
-    setLoading(true); // Set loading to true before fetching
+    dispatch(setLoading(true)); 
     try {
       const response = await fetch(appUrl + "/stock/?ticker=" + ticker, {
         method: "GET",
@@ -34,7 +38,7 @@ function Stocks() {
     } catch (error) {
       console.log("Error fetching User Data:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      dispatch(setLoading(false));
     }
   };
 
@@ -46,8 +50,8 @@ function Stocks() {
   }, [ticker]);
 
   // Show loading state if stock data is not yet available
-  if (loading) {
-    return <div>Loading...</div>;
+  if (loading) {              
+    return <Loading />
   }
 
   const formatNumber = (value) => {

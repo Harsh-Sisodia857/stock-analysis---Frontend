@@ -104,9 +104,7 @@ const StockAdminPage = () => {
     
     try {
       console.log("Stock data to submit:", stock);
-      
       const response = await createStock(stock);
-  
       if (response.success) {
         toast.success("Stock created successfully!");
       } else {

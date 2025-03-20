@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import loginBg from "../assets/login-bgm.jpg";
 import { toast } from "react-toastify";
 import { loginApi } from "../apiManager/stockApiManager";
+import { displayErrors, validateEmail, validatePassword } from "../utility/ultils";
+import { setErrors } from "../store/slice/errorSlice";
 
 export default function Login() {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -13,22 +15,38 @@ export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const {errors} = useSelector((state) => state.errors)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let isValid = true;
+    let validationErrors = { email: "", password: "" };
+
     if (!credentials.email) {
-      toast.error("Email is required");
-      return;
+      validationErrors.email = "Email is required";
+      isValid = false;
+    } else if (!validateEmail(credentials.email)) {
+      validationErrors.email = "Please enter a valid email address";
+      isValid = false;
     }
 
     if (!credentials.password) {
-      toast.error("Password is required");
+      validationErrors.password = "Password is required";
+      isValid = false;
+    } else if (!validatePassword(credentials.password)) {
+      validationErrors.password = "Password must be at least 5 characters";
+      isValid = false;
+    }
+
+    if (!isValid) {
+      dispatch(setErrors(validationErrors));
+      displayErrors(errors)
       return;
     }
 
     const response = await loginApi(credentials.email, credentials.password);
     const json = await response.json();
-    console.log("JSON DATA : ", json);
+
     if (json.success) {
       localStorage.setItem("token", json.authToken);
       dispatch(setUser(json.userData));
@@ -41,6 +59,7 @@ export default function Login() {
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   return (
@@ -73,7 +92,7 @@ export default function Login() {
             />
           </div>
           <div className="flex items-center justify-between">
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">Login</button>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">Login</button>
           </div>
           <div className="text-center mt-4">
             <Link to="/signup" className="text-blue-400 hover:underline">New User? Sign Up</Link>

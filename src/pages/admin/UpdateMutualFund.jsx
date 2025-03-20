@@ -7,6 +7,8 @@ import {
 } from "../../apiManager/stockApiManager";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../store/slice/loadingSlice";
 
 const UpdateMutualFundPage = () => {
   const [formData, setFormData] = useState({
@@ -31,41 +33,42 @@ const UpdateMutualFundPage = () => {
     returns_3yr: "",
     returns_5yr: "",
   });
-
-  const [loading, setLoading] = useState(true);
+  
+  const {loading} = useSelector((state) => state.loading);
   const [fetchError, setFetchError] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
   const location = useLocation();
+  const dispatch = useDispatch()
   // Get scheme_name from URL query parameters
   const getSchemeNameFromURL = () => {
     const schemeName = location.state?.schemeName || "";
     return schemeName;
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     const schemeName = getSchemeNameFromURL();
     if (!schemeName) {
       setFetchError("No mutual fund scheme name provided in URL.");
-      setLoading(false);
+      dispatch(setLoading(false));
       return;
     }
-
+    console.log("Scheme name : ", schemeName)
     // Fetch mutual fund data based on scheme_name
-    fetchMutualFundData(schemeName);
+    await fetchMutualFundData(schemeName);
   }, []);
 
   const fetchMutualFundData = async (schemeName) => {
-    setLoading(true);
+    dispatch(setLoading(true));
     try {
       // Simulate API call
       const response = await fetchMutualFund(schemeName);
       setFormData(response);
-      setLoading(false);
+      dispatch(setLoading(false));
     } catch (error) {
       console.error("Error fetching mutual fund data:", error);
       setFetchError("Failed to load mutual fund data. Please try again.");
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -313,8 +316,8 @@ const UpdateMutualFundPage = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${
-                    errors.category ? "border-red-300" : "border-gray-300"
+                  className={`mt-1 block w-full px-3 py-2 border  ${
+                    errors.category ? "border-red-300" : "border-gray-300 "
                   } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
                 >
                   <option value="">Select Category</option>
