@@ -17,6 +17,9 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    setupFiles: "./jest.setup.cjs",
+    env: {
+      VITE_API_URL: "http://localhost:3000",
+    },
   },
 });

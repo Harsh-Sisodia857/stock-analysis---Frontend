@@ -2,8 +2,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
-import Login from "../Login";
-import '@testing-library/jest-dom'; 
+import Login from "../../pages/Login";
+import "@testing-library/jest-dom"; 
 
 const mockStore = configureStore([]);
 
@@ -11,10 +11,11 @@ describe("Login Component", () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({ user: {} }); 
+    store = mockStore({ user: {} });
+    store.clearActions(); // ✅ Prevents stale actions from affecting tests
   });
 
-  it("renders Login page", () => {
+  test("renders Login page", () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -29,7 +30,7 @@ describe("Login Component", () => {
     expect(screen.getByRole("button", { name: /Login/i })).toBeInTheDocument();
   });
 
-  it("allows the user to type in email and password fields", () => {
+  test("allows the user to type in email and password fields", () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -38,7 +39,6 @@ describe("Login Component", () => {
       </Provider>
     );
 
-    // Fill in the email and password fields
     fireEvent.change(screen.getByLabelText("Email address"), {
       target: { value: "harsh@gmail.com" },
     });
@@ -46,7 +46,6 @@ describe("Login Component", () => {
       target: { value: "12345" },
     });
 
-    // Assert that the input values are correct
     expect(screen.getByLabelText("Email address").value).toBe("harsh@gmail.com");
     expect(screen.getByLabelText("Password").value).toBe("12345");
   });

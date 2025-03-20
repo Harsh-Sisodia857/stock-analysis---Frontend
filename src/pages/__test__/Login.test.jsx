@@ -2,8 +2,33 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
-import Login from "../Login";
+import Login from "../../pages/Login";
 import '@testing-library/jest-dom'; 
+
+// Mock the API module using the correct import path
+jest.mock("../../apiManager/stockApiManager", () => ({
+  loginApi: jest.fn().mockImplementation((email, password) => {
+    return Promise.resolve({
+      json: () => Promise.resolve({
+        success: true,
+        authToken: "fake-token",
+        userData: {
+          id: "1",
+          name: "Test User",
+          email: email
+        }
+      })
+    });
+  })
+}));
+
+// Mock the toast module
+jest.mock("react-toastify", () => ({
+  toast: jest.fn()
+}));
+
+// Mock the image import
+jest.mock("../../assets/login-bgm.jpg", () => "login-bg-mock");
 
 const mockStore = configureStore([]);
 
@@ -11,7 +36,13 @@ describe("Login Component", () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({ user: {} }); 
+    store = mockStore({ 
+      user: {},
+      errors: { errors: [] }
+    }); 
+    
+    // Clear all mocks before each test
+    jest.clearAllMocks();
   });
 
   it("renders Login page", () => {

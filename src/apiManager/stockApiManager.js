@@ -199,6 +199,7 @@ export const updateMutualFund = async (schemeName, formData) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
+      
     }
   );
   return response;
@@ -215,6 +216,7 @@ export const loginApi = async (email, password) => {
       email,
       password,
     }),
+    credentials: "include",
   });
   return response;
 };
@@ -226,6 +228,7 @@ export const signUpApi = async (userDetails) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(userDetails),
+    credentials: "include",
   });
   return response;
 };
