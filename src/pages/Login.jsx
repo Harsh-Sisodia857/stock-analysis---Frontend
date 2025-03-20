@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import loginBg from "../assets/login-bgm.jpg";
 import { toast } from "react-toastify";
+import { loginApi } from "../apiManager/stockApiManager";
 
 export default function Login() {
   const appUrl = import.meta.env.VITE_API_URL;
@@ -25,16 +26,7 @@ export default function Login() {
       return;
     }
 
-    const response = await fetch(appUrl + "/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
+    const response = await loginApi(credentials.email, credentials.password);
     const json = await response.json();
     console.log("JSON DATA : ", json);
     if (json.success) {

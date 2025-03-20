@@ -90,8 +90,6 @@ const MutualFundAdminForm = () => {
         console.error("Submission failed:", error);
         setSubmitStatus("error");
         toast.error("Failed to create Mutual Fund")
-      }finally{
-        navigate("/")
       }
 
       setTimeout(() => {

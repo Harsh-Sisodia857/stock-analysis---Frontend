@@ -4,9 +4,9 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slice/userSlice";
 import signup from "../assets/signup-bg.jpg";  
 import { toast } from 'react-toastify';
+import { signUpApi } from "../apiManager/stockApiManager";
 
 const SignUp = () => {
-  const appUrl = import.meta.env.VITE_API_URL;
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
@@ -29,17 +29,9 @@ const SignUp = () => {
       toast.error('Password is required');
       return;
     }
-
-    const response = await fetch(appUrl + "/user/signup", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userDetails)
-    });
+    const response = await signUpApi(userDetails);
 
     const json = await response.json();
-    console.log("Sign Up JSON : ", json);
     if (json.success) {
       localStorage.setItem('token', json.authToken);
       dispatch(setUser(json.userData));

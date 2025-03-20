@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, Info, AlertCircle } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   fetchMutualFund,
   updateMutualFund,
@@ -37,7 +37,6 @@ const UpdateMutualFundPage = () => {
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
   // Get scheme_name from URL query parameters
   const getSchemeNameFromURL = () => {
     const schemeName = location.state?.schemeName || "";
@@ -123,7 +122,6 @@ const UpdateMutualFundPage = () => {
         console.log("Updated data:", formData);
         setSubmitStatus("success");
         toast("Details Updated Successfully");
-        navigate("/");
       } else {
         toast("Failed to Update");
       }
@@ -174,7 +172,7 @@ const UpdateMutualFundPage = () => {
   };
 
   if (loading) {
-    return <Loading message={"Loading fund details"} />;
+    return <Loading message={"Loading Mutual fund details"} />;
   }
 
   if (fetchError) {

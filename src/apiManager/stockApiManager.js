@@ -123,13 +123,12 @@ const downloadFile = async (endpoint, filename) => {
     // ✅ Create a link and trigger the download
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute(
-      "download",
-      filename.endsWith(".csv") ? filename : `${filename}.csv`
-    );
+    console.log("file name : ", filename);
+    filename = filename.endsWith(".json") ? filename.slice(0, -5) : filename;
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
-
+    
     // ✅ Cleanup
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
@@ -233,4 +232,31 @@ export const updateMutualFund = async (schemeName, formData) => {
   const json = await response.json();
 
   return json;
+};
+
+export const loginApi = async (email, password) => {
+  const appUrl = import.meta.env.VITE_API_URL;
+  const response = await fetch(appUrl + "/user/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+  return response;
+};
+
+export const signUpApi = async (userDetails) => {
+  const appUrl = import.meta.env.VITE_API_URL;
+  const response = await fetch(appUrl + "/user/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userDetails),
+  });
+  return response;
 };
