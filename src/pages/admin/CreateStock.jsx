@@ -75,7 +75,7 @@ const StockAdminPage = () => {
     "Div. Yield(%)": "",
     "PB Ratio": 0,
   });
-
+  const [disabled, SetDisabled] = useState(false)
   const navigate = useNavigate()
   
   const handleChange = (e) => {
@@ -100,6 +100,7 @@ const StockAdminPage = () => {
   };
 
   const handleSubmit = async (e) => {
+    SetDisabled(true)
     e.preventDefault();
     
     try {
@@ -115,6 +116,7 @@ const StockAdminPage = () => {
       toast.error(error.message || "Failed to create the stock!");
     } finally {
       navigate('/'); 
+      SetDisabled(false)
     }
   };
   
@@ -443,7 +445,8 @@ const StockAdminPage = () => {
             <div className="mt-8 flex justify-end">
               <button
                 type="submit"
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                disabled = {disabled}
               >
                 <Save className="w-5 h-5 mr-2" />
                 Save Stock

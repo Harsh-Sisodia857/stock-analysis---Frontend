@@ -3,11 +3,12 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
 import Login from "../../pages/Login";
-import '@testing-library/jest-dom'; 
+import '@testing-library/jest-dom';
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
-// Mock the API module using the correct import path
-jest.mock("../../apiManager/stockApiManager", () => ({
-  loginApi: jest.fn().mockImplementation((email, password) => {
+// Mock the API module using vi.mock
+vi.mock("../../apiManager/stockApiManager", () => ({
+  loginApi: vi.fn().mockImplementation((email, password) => {
     return Promise.resolve({
       json: () => Promise.resolve({
         success: true,
@@ -23,12 +24,14 @@ jest.mock("../../apiManager/stockApiManager", () => ({
 }));
 
 // Mock the toast module
-jest.mock("react-toastify", () => ({
-  toast: jest.fn()
+vi.mock("react-toastify", () => ({
+  toast: vi.fn()
 }));
 
 // Mock the image import
-jest.mock("../../assets/login-bgm.jpg", () => "login-bg-mock");
+vi.mock("../../assets/login-bgm.jpg", () => ({
+  default: "mocked-image.jpg",
+}));
 
 const mockStore = configureStore([]);
 
@@ -38,12 +41,12 @@ describe("Login Component", () => {
   beforeEach(() => {
     store = mockStore({ 
       user: {},
-      errors: { errors: [] }
-    }); 
-    
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+      errors: {} 
+    });
+  
+    vi.clearAllMocks();
   });
+  
 
   it("renders Login page", () => {
     render(

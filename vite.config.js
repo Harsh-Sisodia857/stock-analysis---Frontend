@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { config } from 'dotenv';
+import path from "path";
 
 config();
 
@@ -14,12 +15,15 @@ export default defineConfig({
   },
   define: {
     'process.env': process.env
+  }, 
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
   test: {
     globals: true,
-    setupFiles: "./jest.setup.cjs",
-    env: {
-      VITE_API_URL: "http://localhost:3000",
-    },
-  },
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.js"
+  }
 });
